@@ -36,7 +36,7 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
   strings,
   fretCount
 }) => {
-  const numberedFrets = [ 3, 5, 7, 9, 12 ];
+  const numberedFrets = [ 3, 5, 7, 9, 12 ].filter(f => f <= fretCount);
 
   const leftMargin = 20;
   const bottomMargin = 10;
@@ -57,17 +57,17 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
         <Fretboard {...fretboardSize} />
         <Nut width={fretboardSize.width} height={3} />
         {fretPos.map((yOffset) => (
-          <Translate y={yOffset}>
+          <Translate key={yOffset} y={yOffset}>
             <Fret width={fretboardSize.width} height={2} />
           </Translate>
         ))}
         {stringPos.map(xOffset => (
-          <Translate x={xOffset}>
+          <Translate key={xOffset} x={xOffset}>
             <String width={2} height={fretboardSize.height} />
           </Translate>
         ))}
         {numberedFrets.map(n => (
-          <Translate y={fretPos[n - 1]}>
+          <Translate key={n} y={fretPos[n - 1]}>
             <FretNumber label={n.toString()} />
           </Translate>
         ))}
