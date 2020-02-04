@@ -28,13 +28,14 @@ export type Marker = {
 
 export const FretboardChart: React.FunctionComponent<SizeProps & {
   markers: Marker[],
-  strings: string[],
+  tuning: string[],
   fretCount: number,
 }> = ({
   width,
   height,
-  strings,
-  fretCount
+  tuning,
+  fretCount,
+  markers
 }) => {
   const numberedFrets = [ 3, 5, 7, 9, 12 ].filter(f => f <= fretCount);
 
@@ -49,7 +50,7 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
   const scaleLen = scaleLength(fretCount, fretboardSize.height);
   // TODO: account for string and fret width in positioning
   const fretPos = fretPositions(fretCount, scaleLen);
-  const stringPos = stringPositions(strings.length, fretboardSize.width);
+  const stringPos = stringPositions(tuning.length, fretboardSize.width);
 
   return (
     <svg width={width} height={height}>
@@ -69,6 +70,11 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
         {numberedFrets.map(n => (
           <Translate key={n} y={fretPos[n - 1]}>
             <FretNumber label={n.toString()} />
+          </Translate>
+        ))}
+        {markers.map((marker, i) => (
+          <Translate key={i} x={stringPos[marker.string]} y={fretPos[(marker.fret || 0) - 1]}>
+            <circle r={3} />
           </Translate>
         ))}
       </Translate>
