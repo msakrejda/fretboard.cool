@@ -48,7 +48,7 @@ export const getNotesOnString = (stringRoot: Note, fretCount: number, from: Scal
       result.push({
         note: curr,
         fret: currFret,
-        degree: currDegree,
+        degree: currDegree + 1,
       })
     }
 

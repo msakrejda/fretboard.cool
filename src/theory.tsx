@@ -204,7 +204,7 @@ export const add = (n: Note, interval: Interval):Note => {
   const newNoteLetter = noteLetters[normalizedIdx];
   // corresponding to array above
   const letterSemitones = [ 0, 2, 4, 5, 7, 9, 11 ];
-  const semitonesTraversed = (letterSemitones[newIdx] - letterSemitones[noteIdx]) + (newOctave - n.octave) * 12 - n.pitchClass.accidental;
+  const semitonesTraversed = (letterSemitones[normalizedIdx] - letterSemitones[noteIdx]) + (newOctave - n.octave) * 12 - n.pitchClass.accidental;
   const semitonesDesired = semitones(interval);
   const newAccidental = adjust(n.pitchClass.accidental, semitonesDesired - semitonesTraversed);
 

@@ -22,7 +22,7 @@ type SizeProps = {
 
 export type Marker = {
   string: number;
-  fret: number | null;
+  fret: number;
   label: string;
 }
 
@@ -51,6 +51,19 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
   // TODO: account for string and fret width in positioning
   const fretPos = fretPositions(fretCount, scaleLen);
   const stringPos = stringPositions(tuning.length, fretboardSize.width);
+  const smallestFretDistance = fretPos[fretPos.length - 1] - fretPos[fretPos.length - 2];
+  const markerRadius = Math.max(1, (smallestFretDistance - 3) / 2);
+  // TODO: fix positioning of open string markers
+  const markerY = (fret: number):number => {
+    if (fret === 0) {
+      return -20;
+    }
+    // N.B.: need to map fret numbers to fret position indexes
+    const prev = fret === 1 ? 0 : fretPos[fret - 2];
+    const curr = fretPos[fret - 1];
+
+    return (prev + curr) / 2
+  }
 
   return (
     <svg width={width} height={height}>
@@ -73,13 +86,22 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
           </Translate>
         ))}
         {markers.map((marker, i) => (
-          <Translate key={i} x={stringPos[marker.string]} y={fretPos[(marker.fret || 0) - 1]}>
-            <circle r={3} />
+          <Translate key={i} x={stringPos[marker.string]} y={markerY(marker.fret)}>
+            <FretMarker marker={marker} radius={markerRadius}/>
           </Translate>
         ))}
       </Translate>
     </svg>
   )
+}
+
+const FretMarker: React.FunctionComponent<{ marker: Marker, radius: number }> = ({marker, radius}) => {
+  return (
+    <>
+      <circle r={radius} fill='white' stroke='black' strokeWidth={1} />
+      <text dominantBaseline='middle' textAnchor='middle'>{marker.label}</text>
+    </>
+  );
 }
 
 const Fretboard: React.FunctionComponent<SizeProps> = (props) => {

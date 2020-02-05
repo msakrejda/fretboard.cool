@@ -1,4 +1,4 @@
-import { note, parseNote, pc, NoteLetters, value, Accidental, NoteLetter } from './theory';
+import { note, parseNote, pc, NoteLetters, value, Accidental, NoteLetter, add, M } from './theory';
 
 test('value', () => {
   const letters = NoteLetters;
@@ -35,4 +35,20 @@ test('parseNote', () => {
   expect(n.octave).toEqual(1);
   expect(n.pitchClass.letter).toEqual(NoteLetter.C);
   expect(n.pitchClass.accidental).toEqual(Accidental.Natural);
+})
+
+test('add', () => {
+  const n = parseNote('c1');
+  const result = add(n, M(7));
+  expect(result.pitchClass.letter).toEqual(NoteLetter.B);
+  expect(result.pitchClass.accidental).toEqual(Accidental.Natural);
+  expect(result.octave).toEqual(n.octave);
+})
+
+test('add in G', () => {
+  const n = parseNote('g1');
+  const result = add(n, M(7));
+  expect(result.pitchClass.letter).toEqual(NoteLetter.F);
+  expect(result.pitchClass.accidental).toEqual(Accidental.Sharp);
+  expect(result.octave).toEqual(n.octave + 1);
 })
