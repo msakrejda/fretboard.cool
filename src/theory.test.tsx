@@ -1,4 +1,4 @@
-import { note, parseNote, pc, NoteLetters, value, Accidental, NoteLetter, add, M } from './theory';
+import { note, parseNote, pc, NoteLetters, value, Accidental, NoteLetter, add, M, parsePitchClass, nextAtOrBelow, noteEqual, Note, parseInterval } from './theory';
 
 test('value', () => {
   const letters = NoteLetters;
@@ -37,18 +37,28 @@ test('parseNote', () => {
   expect(n.pitchClass.accidental).toEqual(Accidental.Natural);
 })
 
-test('add', () => {
-  const n = parseNote('c1');
-  const result = add(n, M(7));
-  expect(result.pitchClass.letter).toEqual(NoteLetter.B);
-  expect(result.pitchClass.accidental).toEqual(Accidental.Natural);
-  expect(result.octave).toEqual(n.octave);
+describe.each([
+  [ 'c1', 'M7', 'b1' ],
+  [ 'bb3', 'M2', 'c4' ],
+])('add(%s, %s)', (noteStr, intervalStr, expectedStr) => {
+  test('it adds correctly', () => {
+    const note = parseNote(noteStr);
+    const interval = parseInterval(intervalStr);
+    const expected = parseNote(expectedStr);
+    const result = add(note, interval);
+    expect(noteEqual(result, expected)).toEqual(true);
+  })
 })
 
-test('add in G', () => {
-  const n = parseNote('g1');
-  const result = add(n, M(7));
-  expect(result.pitchClass.letter).toEqual(NoteLetter.F);
-  expect(result.pitchClass.accidental).toEqual(Accidental.Sharp);
-  expect(result.octave).toEqual(n.octave + 1);
+describe.each([
+  [ 'bb', 'a3', 'bb2' ]
+])('nextAtOrBelow(%s, %s)', (pitchClassStr, relativeToStr, expectedStr) => {
+  test('finds the correct note', () => {
+    const pitchClass = parsePitchClass(pitchClassStr);
+    const relativeTo = parseNote(relativeToStr);
+    const expected = parseNote(expectedStr);
+    const result = nextAtOrBelow(pitchClass, relativeTo);
+    expect(result).toBeDefined();
+    expect(noteEqual(result as Note, expected))
+  })
 })

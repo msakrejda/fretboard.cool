@@ -30,6 +30,14 @@ export const Accidentals = [
   Accidental.Sharp,
 ]
 
+export const formatAccidental = (value: Accidental):string => {
+  return {
+    [Accidental.Flat]: '♭',
+    [Accidental.Natural]: '♮',
+    [Accidental.Sharp]: '♯'
+  }[value];
+}
+
 export const adjust = (accidental: Accidental, semitones: number): Accidental | undefined => {
   const newAccidental = accidental + semitones;
   return newAccidental in Accidental ? newAccidental : undefined;
@@ -47,6 +55,10 @@ export const pc = (letter: NoteLetter, accidental: Accidental = Accidental.Natur
   }
 }
 
+export const pcEqual = (pc1: PitchClass, pc2: PitchClass): boolean => {
+  return pc1.letter === pc2.letter && pc1.accidental === pc2.accidental;
+}
+
 export interface Note {
   pitchClass: PitchClass;
   octave: number;
@@ -57,6 +69,9 @@ export const note = (pitchClass: PitchClass, octave: number):Note => {
     pitchClass,
     octave
   }
+}
+export const noteEqual = (n1: Note, n2: Note):boolean => {
+  return pcEqual(n1.pitchClass, n2.pitchClass) && n1.octave === n2.octave;
 }
 
 export const value = (note: Note): number => {
@@ -80,14 +95,31 @@ export enum Quality {
   Perfect
 }
 
+type MajorMinorQuality = Quality.Major | Quality.Minor | Quality.Augmented | Quality.Diminished;
+type PerfectQuality = Quality.Perfect | Quality.Augmented | Quality.Diminished;
+
+export const isMajorMinorQuality = (value: Quality): value is MajorMinorQuality => {
+  return [Quality.Major, Quality.Minor, Quality.Augmented, Quality.Diminished].includes(value)
+}
+
+export const isPerfectQuality = (value: Quality): value is PerfectQuality => {
+  return [Quality.Perfect, Quality.Augmented, Quality.Diminished].includes(value)
+}
+
 type MajorMinorIntervalNumber = 2 | 3 | 6 | 7;
-
 type PerfectIntervalNumber = 1 | 4 | 5 | 8;
-
 type IntervalNumber = MajorMinorIntervalNumber | PerfectIntervalNumber;
 
-function isMajorMinor (value: IntervalNumber): value is MajorMinorIntervalNumber {
+function isIntervalNumber (value: number): value is IntervalNumber {
+  return value >= 1 && value <= 8;
+}
+
+function isPerfect (value: IntervalNumber): value is PerfectIntervalNumber {
   return [ 1, 4, 5, 8 ].includes(value);
+}
+
+function isMajorMinor (value: IntervalNumber): value is MajorMinorIntervalNumber {
+  return [ 2, 3, 6, 7 ].includes(value);
 }
 
 type PerfectInterval = {
@@ -159,11 +191,9 @@ export const m = (number: MajorMinorIntervalNumber): MajorMinorInterval => {
   }
 }
 
-export type IntervalSequence = Interval[];
-
 export interface Scale {
-  pitchClass: PitchClass,
-  intervals: IntervalSequence
+  readonly pitchClass: PitchClass,
+  readonly intervals: readonly Interval[]
 }
 
 export const ScaleKinds = {
@@ -171,9 +201,11 @@ export const ScaleKinds = {
   'minor': [ P(1), M(2), m(3), P(4), P(5), m(6), m(7) ],
   'major pentatonic': [ P(1), M(2), M(3), P(5), M(6) ],
   'minor pentatonic': [ P(1), m(3), P(4), P(5), m(7) ],
-}
+} as const;
 
-export const scale = (pitchClass: PitchClass, intervals: Interval[]): Scale => {
+export type ScaleKind = keyof typeof ScaleKinds;
+
+export const scale = (pitchClass: PitchClass, intervals: readonly Interval[]): Scale => {
   return {
     pitchClass,
     intervals
@@ -181,8 +213,8 @@ export const scale = (pitchClass: PitchClass, intervals: Interval[]): Scale => {
 }
 
 export interface Chord {
-  pitchClass: PitchClass,
-  intervals: IntervalSequence
+  readonly pitchClass: PitchClass,
+  readonly intervals: readonly Interval[]
 }
 
 export const ChordKinds = {
@@ -206,7 +238,8 @@ export const add = (n: Note, interval: Interval):Note => {
   const letterSemitones = [ 0, 2, 4, 5, 7, 9, 11 ];
   const semitonesTraversed = (letterSemitones[normalizedIdx] - letterSemitones[noteIdx]) + (newOctave - n.octave) * 12 - n.pitchClass.accidental;
   const semitonesDesired = semitones(interval);
-  const newAccidental = adjust(n.pitchClass.accidental, semitonesDesired - semitonesTraversed);
+  const offset = semitonesDesired - semitonesTraversed;
+  const newAccidental = offset in Accidental ? offset : undefined;
 
   return note(pc(newNoteLetter, newAccidental), newOctave);
 }
@@ -222,18 +255,85 @@ export const nextAtOrBelow = (pitchClass: PitchClass, startNote: Note): Note | u
   }
 }
 
-export const parseNote = (noteName: string): Note => {
-  const [ letter, ...rest ] = noteName.split('');
-  const accidentalStr = rest.length === 2 ? rest[0] : '';
-  const octave = parseInt(rest[rest.length === 2 ? 1 : 0]);
-  const accidental = accidentalStr === ''
+export const parseInterval = (str: string): Interval => {
+  if (str.length !== 2) {
+    throw new Error('unknown interval: ' + str);
+  }
+
+  const [ qualityStr, numberStr ] = str.split('');
+  const number = parseInt(numberStr, 10);
+  if (!isIntervalNumber(number)) {
+    throw new Error('unknown interval number: ' + numberStr);
+  }
+
+  if (isMajorMinor(number)) {
+    const qualities: { [shorthand: string]: MajorMinorQuality } = {
+      d: Quality.Diminished,
+      m: Quality.Minor,
+      M: Quality.Major,
+      A: Quality.Augmented,
+    };
+    const quality = qualities[qualityStr];
+    if (quality === undefined) {
+      throw new Error('unknown interval quality: ' + qualityStr);
+    }
+    return {
+      quality: qualities[qualityStr],
+      number
+    }
+  } else if (isPerfect(number)) {
+    const qualities: { [shorthand: string]: PerfectQuality } = {
+      d: Quality.Diminished,
+      P: Quality.Perfect,
+      A: Quality.Augmented,
+    };
+    const quality = qualities[qualityStr];
+    if (quality === undefined) {
+      throw new Error('unknown interval quality: ' + qualityStr);
+    }
+    return {
+      quality: qualities[qualityStr],
+      number
+    }
+  } else {
+    throw new Error('unknown interval: ' + str);
+  }
+}
+
+export const parsePitchClass = (pcName: string): PitchClass => {
+  const [ letter, maybeAccidental, ...rest ] = pcName.split('');
+  if (rest.length !== 0) {
+    throw new Error('unknown pitch class: ' + pcName);
+  }
+  const upcaseLetter = letter.toUpperCase();
+  if (!NoteLetters.includes(upcaseLetter as NoteLetter)) {
+    throw new Error('unknown note letter: ' + letter);
+  }
+  const accidental = !maybeAccidental || maybeAccidental === '♮'
     ? Accidental.Natural
-    : accidentalStr === '#'
+    : maybeAccidental === '#' || maybeAccidental === '♯'
     ? Accidental.Sharp
-    : accidentalStr === 'b'
+    : maybeAccidental === 'b' || maybeAccidental === '♭'
     ? Accidental.Flat
-    : undefined
-  return note(pc(letter.toUpperCase() as NoteLetter, accidental), octave);
+    : undefined;
+
+  if (accidental === undefined) {
+    throw new Error('unknown accidental: ' + maybeAccidental);
+  }
+
+  return pc(upcaseLetter as NoteLetter, accidental);
+}
+
+export const parseNote = (noteName: string): Note => {
+  const maybeNoteParts = noteName.match(/(^\D+)(\d+)/);
+  if (!maybeNoteParts) {
+    throw new Error('unknown note: ' + maybeNoteParts);
+  }
+  const [ , maybePc, octaveStr ] = maybeNoteParts;
+  const pitchClass = parsePitchClass(maybePc);
+  const octave = parseInt(octaveStr, 10);
+
+  return note(pitchClass, octave);
 }
 
 export const Tuning = {

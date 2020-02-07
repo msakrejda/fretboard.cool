@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Tuning, ScaleKinds, NoteLetters, NoteLetter, parseNote, pc, scale } from './theory';
+import { Tuning, ScaleKinds, NoteLetters, NoteLetter, parseNote, pc, scale, ScaleKind, Accidental, Accidentals, formatAccidental } from './theory';
 import { getNotesOnString } from './util';
 import { FretboardChart } from './FretboardChart';
 
@@ -24,21 +24,12 @@ where:
 const App: React.FC = () => {
   const [ fretCount, setFretCount ] = useState(12);
   const [ tuning, setTuning ] = useState(Tuning.mandolin.standard);
-  const [ key, setKey ] = useState('G');
-  const [ scaleKind, setScaleKind ] = useState('major');
+  const [ key, setKey ] = useState<NoteLetter>(NoteLetter.G);
+  const [ scaleKind, setScaleKind ] = useState<ScaleKind>('major');
+  const [ accidental, setAccidental ] = useState<Accidental>(Accidental.Natural);
 
-  /*  
-  now for each string:
-   - starting with the root of the scale below the string note
-     - go through all 
-
-   - for all the notes in the string,
-       for notes that occur in the scale
-       range(notes: Array<string|number>, options) => string[]
-  */
-
-  const selectedPc = pc(key as NoteLetter);
-  const selectedScale = scale(selectedPc, ScaleKinds.major);
+  const selectedPc = pc(key, accidental);
+  const selectedScale = scale(selectedPc, ScaleKinds[scaleKind]);
   const stringNotes = tuning.map(parseNote);
   const markers = stringNotes.flatMap((n, i) => {
     const notes = getNotesOnString(n, fretCount, selectedScale);
@@ -57,7 +48,8 @@ const App: React.FC = () => {
         tuning:
         <TuningSelector value={tuning} onChange={setTuning} />
         key:
-        <KeySelector value={key} onChange={setKey} />
+        <NoteLetterSelector value={key} onChange={setKey} />
+        <AccidentalSelector value={accidental} onChange={setAccidental} />
         scale:
         <ScaleSelector value={scaleKind} onChange={setScaleKind} />
       </div>
@@ -66,13 +58,13 @@ const App: React.FC = () => {
   );
 }
 
-const ScaleSelector: React.FC<{value: string, onChange: (scale: string) => void}> = ({value, onChange}) => {
+const ScaleSelector: React.FC<{value: ScaleKind, onChange: (scale: ScaleKind) => void}> = ({value, onChange}) => {
   const options = Object.keys(ScaleKinds).map(scale => {
     return <option key={scale} value={scale}>{scale}</option>
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange(e.currentTarget.value);
+    onChange(e.currentTarget.value as ScaleKind);
   }
   
   return (
@@ -82,13 +74,29 @@ const ScaleSelector: React.FC<{value: string, onChange: (scale: string) => void}
   )
 }
 
-const KeySelector: React.FC<{value: string, onChange: (key: string) => void}> = ({value, onChange}) => {
+const NoteLetterSelector: React.FC<{value: NoteLetter, onChange: (key: NoteLetter) => void}> = ({value, onChange}) => {
   const options = NoteLetters.map(noteLetter => {
     return <option key={noteLetter} value={noteLetter}>{NoteLetter[noteLetter]}</option>
   })
 
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange(e.currentTarget.value);
+    onChange(e.currentTarget.value as NoteLetter);
+  }
+
+  return (
+    <select value={value} onChange={handleChange}>
+      {options}
+    </select>
+  )
+}
+
+const AccidentalSelector: React.FC<{value: Accidental, onChange: (accidental: Accidental) => void}> = ({value, onChange}) => {
+  const options = Accidentals.map(accidental => {
+    return <option key={accidental} value={accidental}>{formatAccidental(accidental)}</option>
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    onChange(parseInt(e.currentTarget.value, 10) as Accidental);
   }
   
   return (
