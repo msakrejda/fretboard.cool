@@ -113,7 +113,6 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
 
 const FretMarker: React.FunctionComponent<{ marker: Marker, radius: number, onClick: (marker: Marker) => void }> = ({marker, radius, onClick}) => {
   const handleMarkerClick = () => {
-    console.log('handling click')
     onClick(marker);
   }
   return (
