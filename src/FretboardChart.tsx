@@ -40,10 +40,11 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
   const numberedFrets = [ 3, 5, 7, 9, 12 ].filter(f => f <= fretCount);
 
   const leftMargin = 20;
+  const rightMargin = 20;
   const bottomMargin = 10;
   const topMargin = 30;
   const fretboardSize = {
-    width: width - leftMargin,
+    width: width - leftMargin - rightMargin,
     height: height - topMargin - bottomMargin,
   }
 
@@ -52,32 +53,44 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
   const fretPos = fretPositions(fretCount, scaleLen);
   const stringPos = stringPositions(tuning.length, fretboardSize.width);
   const smallestFretDistance = fretPos[fretPos.length - 1] - fretPos[fretPos.length - 2];
-  const markerRadius = Math.max(1, (smallestFretDistance - 3) / 2);
-  // TODO: fix positioning of open string markers
+  const nutWidth = 4;
+  const fretWidth = 2;
+  const stringWidth = 2;
+  const openStringMarkerOffset = topMargin - 15;
+  const markerRadius = Math.max(1, 
+    Math.min(
+      (smallestFretDistance - fretWidth - 2) / 2,
+      (stringPos[1] - stringPos[0] - stringWidth - 2) / 2,
+      (topMargin - openStringMarkerOffset - 1), // distance to nut
+      openStringMarkerOffset - 1 // distance to top of chart
+    )
+  );
   const markerY = (fret: number):number => {
     if (fret === 0) {
-      return -20;
+      // TODO: fix positioning of open string markers--this is just
+      // a rough guess
+      return -openStringMarkerOffset;
     }
     // N.B.: need to map fret numbers to fret position indexes
     const prev = fret === 1 ? 0 : fretPos[fret - 2];
     const curr = fretPos[fret - 1];
 
-    return (prev + curr) / 2
+    return (prev + curr) / 2 + (fretWidth / 2)
   }
 
   return (
     <svg width={width} height={height}>
       <Translate x={leftMargin} y={topMargin}>
         <Fretboard {...fretboardSize} />
-        <Nut width={fretboardSize.width} height={3} />
+        <Nut width={fretboardSize.width} height={nutWidth} />
         {fretPos.map((yOffset) => (
           <Translate key={yOffset} y={yOffset}>
-            <Fret width={fretboardSize.width} height={2} />
+            <Fret width={fretboardSize.width} height={fretWidth} />
           </Translate>
         ))}
         {stringPos.map(xOffset => (
           <Translate key={xOffset} x={xOffset}>
-            <String width={2} height={fretboardSize.height} />
+            <String width={stringWidth} height={fretboardSize.height} />
           </Translate>
         ))}
         {numberedFrets.map(n => (

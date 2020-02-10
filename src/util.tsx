@@ -38,7 +38,7 @@ export const getNotesOnString = (stringRoot: Note, fretCount: number, from: Scal
   }
   const startValue = value(stringRoot)
   const maxValue = startValue + fretCount;
-  let currDegree = 0;
+  let currInterval = 0;
   let currRoot = start;
   let curr = start;
   let currValue = value(curr);
@@ -48,16 +48,16 @@ export const getNotesOnString = (stringRoot: Note, fretCount: number, from: Scal
       result.push({
         note: curr,
         fret: currFret,
-        degree: currDegree + 1,
+        degree: from.intervals[currInterval].number,
       })
     }
 
-    currDegree += 1;
-    if (currDegree === from.intervals.length) {
-      currDegree = 0;
+    currInterval += 1;
+    if (currInterval === from.intervals.length) {
+      currInterval = 0;
       currRoot = add(currRoot, P(8));
     }
-    curr = add(currRoot, from.intervals[currDegree]);
+    curr = add(currRoot, from.intervals[currInterval]);
     currValue = value(curr);
   }
   return result;

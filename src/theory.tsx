@@ -19,9 +19,11 @@ export const NoteLetters = [
 ]
 
 export enum Accidental {
+  DoubleFlat = -2,
   Flat = -1,
   Natural = 0,
-  Sharp = 1
+  Sharp = 1,
+  DoubleSharp = 2
 }
 
 export const Accidentals = [
@@ -32,9 +34,11 @@ export const Accidentals = [
 
 export const formatAccidental = (value: Accidental):string => {
   return {
+    [Accidental.DoubleFlat]: '𝄫',
     [Accidental.Flat]: '♭',
     [Accidental.Natural]: '♮',
-    [Accidental.Sharp]: '♯'
+    [Accidental.Sharp]: '♯',
+    [Accidental.DoubleSharp]: '𝄪',
   }[value];
 }
 
@@ -220,7 +224,8 @@ export interface Chord {
 export const ChordKinds = {
   major: [ P(1), M(3), P(5) ],
   minor: [ P(1), m(3), P(5) ],
-}
+  'dominant 7': [ P(1), m(3), P(5), m(7) ],
+} as const;
 
 export const add = (n: Note, interval: Interval):Note => {
   const noteLetters = [ NoteLetter.C, NoteLetter.D, NoteLetter.E, NoteLetter.F, NoteLetter.G, NoteLetter.A, NoteLetter.B ];
@@ -322,6 +327,11 @@ export const parsePitchClass = (pcName: string): PitchClass => {
   }
 
   return pc(upcaseLetter as NoteLetter, accidental);
+}
+
+export const formatPitchClass = (pc: PitchClass): string => {
+  const accidental = pc.accidental === Accidental.Natural ? '' : formatAccidental(pc.accidental);
+  return `${pc.letter}${accidental}`
 }
 
 export const parseNote = (noteName: string): Note => {

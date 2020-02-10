@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-import { Tuning, ScaleKinds, NoteLetters, NoteLetter, parseNote, pc, scale, ScaleKind, Accidental, Accidentals, formatAccidental } from './theory';
+import { Tuning, ScaleKinds, NoteLetters, NoteLetter, parseNote, pc, scale, ScaleKind, Accidental, Accidentals, formatAccidental, PitchClass, formatPitchClass } from './theory';
 import { getNotesOnString } from './util';
 import { FretboardChart } from './FretboardChart';
 
@@ -21,41 +21,57 @@ where:
 
 */
 
+type MarkerText = 'note' | 'degree';
+
 const App: React.FC = () => {
   const [ fretCount, setFretCount ] = useState(12);
   const [ tuning, setTuning ] = useState(Tuning.mandolin.standard);
-  const [ key, setKey ] = useState<NoteLetter>(NoteLetter.G);
+  const [ key, setKey ] = useState<PitchClass>(pc(NoteLetter.G));
   const [ scaleKind, setScaleKind ] = useState<ScaleKind>('major');
-  const [ accidental, setAccidental ] = useState<Accidental>(Accidental.Natural);
+  const [ display, setDisplay ] = useState<MarkerText>('note');
 
-  const selectedPc = pc(key, accidental);
-  const selectedScale = scale(selectedPc, ScaleKinds[scaleKind]);
+  const selectedScale = scale(key, ScaleKinds[scaleKind]);
   const stringNotes = tuning.map(parseNote);
   const markers = stringNotes.flatMap((n, i) => {
     const notes = getNotesOnString(n, fretCount, selectedScale);
     return notes.map(fretboardNote => ({
       string: i,
-      label: String(fretboardNote.degree),
+      label: display === 'degree' ? String(fretboardNote.degree) : formatPitchClass(fretboardNote.note.pitchClass),
       fret: fretboardNote.fret,
     }))
   })
 
   return (
-    <div className="App">
-      <div>
-        frets:
-        <FretCountSelector value={fretCount} onChange={setFretCount} />
-        tuning:
-        <TuningSelector value={tuning} onChange={setTuning} />
-        key:
-        <NoteLetterSelector value={key} onChange={setKey} />
-        <AccidentalSelector value={accidental} onChange={setAccidental} />
-        scale:
-        <ScaleSelector value={scaleKind} onChange={setScaleKind} />
-      </div>
+    <div className="Main">
       <FretboardChart markers={markers} tuning={tuning} fretCount={fretCount} width={200} height={600} />
+      <div>
+        <FretCountSelector value={fretCount} onChange={setFretCount} />
+        <TuningSelector value={tuning} onChange={setTuning} />
+        <KeySelector value={key} onChange={setKey} />
+        <ScaleSelector value={scaleKind} onChange={setScaleKind} />
+        <DisplaySelector value={display} onChange={setDisplay} />
+      </div>
     </div>
   );
+}
+
+const DisplaySelector: React.FC<{value: MarkerText, onChange: (display: MarkerText) => void}> = ({value, onChange}) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(e.currentTarget.value as MarkerText);
+  }
+  return (
+    <div>
+      show
+      <label>
+        <input type="radio" name="display" value='degree' checked={value === 'degree'} onChange={handleChange} />  
+        scale degree
+      </label>
+      <label>
+        <input type="radio" name="display" value='note' checked={value === 'note'} onChange={handleChange} />
+        note name
+      </label>
+    </div>
+  )
 }
 
 const ScaleSelector: React.FC<{value: ScaleKind, onChange: (scale: ScaleKind) => void}> = ({value, onChange}) => {
@@ -68,41 +84,39 @@ const ScaleSelector: React.FC<{value: ScaleKind, onChange: (scale: ScaleKind) =>
   }
   
   return (
-    <select value={value} onChange={handleChange}>
-      {options}
-    </select>
+    <div>
+      scale:
+      <select value={value} onChange={handleChange}>
+        {options}
+      </select>
+    </div>
   )
 }
 
-const NoteLetterSelector: React.FC<{value: NoteLetter, onChange: (key: NoteLetter) => void}> = ({value, onChange}) => {
-  const options = NoteLetters.map(noteLetter => {
-    return <option key={noteLetter} value={noteLetter}>{NoteLetter[noteLetter]}</option>
-  })
 
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange(e.currentTarget.value as NoteLetter);
+const KeySelector: React.FC<{value: PitchClass, onChange: (pitchClass: PitchClass) => void}> = ({value, onChange}) => {
+  const handleLetterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newLetter = e.currentTarget.value as NoteLetter;
+    const newAccidental = value.accidental;
+
+    onChange(pc(newLetter, newAccidental));
   }
 
-  return (
-    <select value={value} onChange={handleChange}>
-      {options}
-    </select>
-  )
-}
-
-const AccidentalSelector: React.FC<{value: Accidental, onChange: (accidental: Accidental) => void}> = ({value, onChange}) => {
-  const options = Accidentals.map(accidental => {
-    return <option key={accidental} value={accidental}>{formatAccidental(accidental)}</option>
-  })
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    onChange(parseInt(e.currentTarget.value, 10) as Accidental);
+  const handleAccidentalChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const newAccidental = parseInt(e.currentTarget.value, 10) as Accidental;
+    onChange(pc(value.letter, newAccidental));
   }
   
   return (
-    <select value={value} onChange={handleChange}>
-      {options}
+    <div>
+    key:
+    <select value={value.letter} onChange={handleLetterChange}>
+      {NoteLetters.map(n => <option key={n} value={n}>{NoteLetter[n]}</option>)}
     </select>
+    <select value={value.accidental} onChange={handleAccidentalChange}>
+      {Accidentals.map(a => <option key={a} value={a}>{formatAccidental(a)}</option>)}
+    </select>
+    </div>
   )
 }
 
@@ -121,9 +135,12 @@ const TuningSelector: React.FC<{value: string[], onChange: (strings: string[]) =
   }
   
   return (
-    <select value={value.join(',')} onChange={handleChange}>
-      {options}
-    </select>
+    <div>
+      tuning:
+      <select value={value.join(',')} onChange={handleChange}>
+        {options}
+      </select>
+    </div>
   )
 }
 
@@ -131,7 +148,9 @@ const FretCountSelector: React.FC<{value: number, onChange: (count: number) => v
   const handleFretCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(parseInt(e.currentTarget.value, 10));
   }
-  return <input type="number" min={3} max={24} value={value} onChange={handleFretCountChange} />
+  return <div>
+    <label>frets: <input type="number" min={3} max={24} value={value} onChange={handleFretCountChange} /></label>
+  </div>
 }
 
 export default App;
