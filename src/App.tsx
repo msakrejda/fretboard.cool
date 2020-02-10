@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
-import { Tuning, ScaleKinds, NoteLetters, NoteLetter, parseNote, pc, scale, ScaleKind, Accidental, Accidentals, formatAccidental, PitchClass, formatPitchClass } from './theory';
+import Soundfont from 'soundfont-player';
+
+import { Tuning, ScaleKinds, NoteLetters, NoteLetter, parseNote, pc, scale, ScaleKind, Accidental, Accidentals, formatAccidental, PitchClass, formatPitchClass, formatNote, Note } from './theory';
 import { getNotesOnString } from './util';
-import { FretboardChart } from './FretboardChart';
+import { FretboardChart, Marker } from './FretboardChart';
 
 import './App.css';
 
@@ -30,26 +32,59 @@ const App: React.FC = () => {
   const [ scaleKind, setScaleKind ] = useState<ScaleKind>('major');
   const [ display, setDisplay ] = useState<MarkerText>('note');
 
+  const [ pendingPlayback, setPendingPlayback ] = useState<Note | undefined>();
+  const [ soundPlayer, setSoundPlayer ] = useState<Soundfont.Player | undefined>();
+
+  const handleMarkerClick = (marker: Marker) => {
+    if (!soundPlayer) {
+      setPendingPlayback(marker.note);
+      const ac = new AudioContext();
+      // TODO: deal with unmounting race condition
+      Soundfont.instrument(ac, 'acoustic_guitar_steel', { soundfont: 'FluidR3_GM' }).then(guitar => {
+        setSoundPlayer(guitar)
+      })
+      return;
+    }
+
+    const noteLabel = formatNote(marker.note, true);
+    soundPlayer.play(noteLabel);
+  }
+
+  useEffect(() => {
+    if (soundPlayer && pendingPlayback) {
+      const noteLabel = formatNote(pendingPlayback, true);
+      soundPlayer.stop();
+      soundPlayer.play(noteLabel);
+      setPendingPlayback(undefined);
+    }
+  }, [ soundPlayer, pendingPlayback ]);
+
   const selectedScale = scale(key, ScaleKinds[scaleKind]);
   const stringNotes = tuning.map(parseNote);
   const markers = stringNotes.flatMap((n, i) => {
     const notes = getNotesOnString(n, fretCount, selectedScale);
     return notes.map(fretboardNote => ({
       string: i,
-      label: display === 'degree' ? String(fretboardNote.degree) : formatPitchClass(fretboardNote.note.pitchClass),
       fret: fretboardNote.fret,
+      label: display === 'degree' ? String(fretboardNote.degree) : formatPitchClass(fretboardNote.note.pitchClass),
+      note: fretboardNote.note,
     }))
   })
 
   return (
-    <div className="Main">
-      <FretboardChart markers={markers} tuning={tuning} fretCount={fretCount} width={200} height={600} />
-      <div>
-        <FretCountSelector value={fretCount} onChange={setFretCount} />
-        <TuningSelector value={tuning} onChange={setTuning} />
-        <KeySelector value={key} onChange={setKey} />
-        <ScaleSelector value={scaleKind} onChange={setScaleKind} />
-        <DisplaySelector value={display} onChange={setDisplay} />
+    <div>
+      <div className="Main">
+        <FretboardChart markers={markers} onMarkerClick={handleMarkerClick} tuning={tuning} fretCount={fretCount} width={200} height={600} />
+        <div>
+          <FretCountSelector value={fretCount} onChange={setFretCount} />
+          <TuningSelector value={tuning} onChange={setTuning} />
+          <KeySelector value={key} onChange={setKey} />
+          <ScaleSelector value={scaleKind} onChange={setScaleKind} />
+          <DisplaySelector value={display} onChange={setDisplay} />
+        </div>
+      </div>
+      <div className="Footer">
+        <small>sound playback via FluidR3 sound font Creative Commons Attribution 3.0 License</small>
       </div>
     </div>
   );

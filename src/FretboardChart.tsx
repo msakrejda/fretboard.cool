@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { translate, scaleLength, fretPositions, stringPositions } from './util';
+import { Note } from './theory';
 /*
 
  - fingerboard
@@ -24,18 +25,21 @@ export type Marker = {
   string: number;
   fret: number;
   label: string;
+  note: Note;
 }
 
 export const FretboardChart: React.FunctionComponent<SizeProps & {
   markers: Marker[],
   tuning: string[],
   fretCount: number,
+  onMarkerClick: (marker: Marker) => void,
 }> = ({
   width,
   height,
   tuning,
   fretCount,
-  markers
+  markers,
+  onMarkerClick,
 }) => {
   const numberedFrets = [ 3, 5, 7, 9, 12 ].filter(f => f <= fretCount);
 
@@ -56,6 +60,7 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
   const nutWidth = 4;
   const fretWidth = 2;
   const stringWidth = 2;
+  // TODO: fix positioning of open string markers--this is just a rough guess
   const openStringMarkerOffset = topMargin - 15;
   const markerRadius = Math.max(1, 
     Math.min(
@@ -67,8 +72,6 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
   );
   const markerY = (fret: number):number => {
     if (fret === 0) {
-      // TODO: fix positioning of open string markers--this is just
-      // a rough guess
       return -openStringMarkerOffset;
     }
     // N.B.: need to map fret numbers to fret position indexes
@@ -100,7 +103,7 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
         ))}
         {markers.map((marker, i) => (
           <Translate key={i} x={stringPos[marker.string]} y={markerY(marker.fret)}>
-            <FretMarker marker={marker} radius={markerRadius}/>
+            <FretMarker marker={marker} radius={markerRadius} onClick={onMarkerClick}/>
           </Translate>
         ))}
       </Translate>
@@ -108,11 +111,15 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
   )
 }
 
-const FretMarker: React.FunctionComponent<{ marker: Marker, radius: number }> = ({marker, radius}) => {
+const FretMarker: React.FunctionComponent<{ marker: Marker, radius: number, onClick: (marker: Marker) => void }> = ({marker, radius, onClick}) => {
+  const handleMarkerClick = () => {
+    console.log('handling click')
+    onClick(marker);
+  }
   return (
     <>
-      <circle r={radius} fill='white' stroke='black' strokeWidth={1} />
-      <text dominantBaseline='middle' textAnchor='middle'>{marker.label}</text>
+      <circle r={radius} fill='white' stroke='black' strokeWidth={1} onClick={handleMarkerClick} />
+      <text dominantBaseline='middle' textAnchor='middle' pointerEvents='none'>{marker.label}</text>
     </>
   );
 }

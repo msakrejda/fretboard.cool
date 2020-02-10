@@ -32,13 +32,13 @@ export const Accidentals = [
   Accidental.Sharp,
 ]
 
-export const formatAccidental = (value: Accidental):string => {
+export const formatAccidental = (value: Accidental, ascii: boolean = false):string => {
   return {
-    [Accidental.DoubleFlat]: '𝄫',
-    [Accidental.Flat]: '♭',
-    [Accidental.Natural]: '♮',
-    [Accidental.Sharp]: '♯',
-    [Accidental.DoubleSharp]: '𝄪',
+    [Accidental.DoubleFlat]: ascii ? 'bb' : '𝄫',
+    [Accidental.Flat]: ascii ? 'b' : '♭',
+    [Accidental.Natural]: ascii ? '' : '♮',
+    [Accidental.Sharp]: ascii ? '#' : '♯',
+    [Accidental.DoubleSharp]: ascii ? '##' : '𝄪',
   }[value];
 }
 
@@ -329,8 +329,8 @@ export const parsePitchClass = (pcName: string): PitchClass => {
   return pc(upcaseLetter as NoteLetter, accidental);
 }
 
-export const formatPitchClass = (pc: PitchClass): string => {
-  const accidental = pc.accidental === Accidental.Natural ? '' : formatAccidental(pc.accidental);
+export const formatPitchClass = (pc: PitchClass, ascii: boolean = false): string => {
+  const accidental = pc.accidental === Accidental.Natural ? '' : formatAccidental(pc.accidental, ascii);
   return `${pc.letter}${accidental}`
 }
 
@@ -344,6 +344,10 @@ export const parseNote = (noteName: string): Note => {
   const octave = parseInt(octaveStr, 10);
 
   return note(pitchClass, octave);
+}
+
+export const formatNote = (note: Note, ascii: boolean = false): string => {
+  return `${formatPitchClass(note.pitchClass, ascii)}${note.octave}`
 }
 
 export const Tuning = {

@@ -1,8 +1,8 @@
 * support arpeggio
 * adjust fretboard width based on string count
 * choose marker colors
+* custom tuning
 * add router with routes for all parameters
 * refactor theory file
-* play notes when clicking on them
 * key-oriented navigation (pick key, then easily switch I / II / IV / V / etc.)
 * superimpose arpeggios on scale
