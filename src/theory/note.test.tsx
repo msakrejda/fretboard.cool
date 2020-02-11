@@ -1,4 +1,8 @@
-import { note, parseNote, pc, NoteLetters, value, Accidental, NoteLetter, add, M, parsePitchClass, nextAtOrBelow, noteEqual, Note, parseInterval } from './theory';
+import { Accidental } from './accidental';
+import { NoteLetter, NoteLetters } from './letter';
+
+import note, { nextAtOrBelow, Note } from './note';
+import pc from './pitchClass';
 
 test('value', () => {
   const letters = NoteLetters;
@@ -6,9 +10,9 @@ test('value', () => {
   let prevFlatVal: number, prevNaturalVal: number, prevSharpVal: number;
   octaves.forEach(o => {
     letters.forEach(l => {
-      const flatVal = value(note(pc(l, Accidental.Flat), o))
-      const naturalVal = value(note(pc(l, Accidental.Natural), o))
-      const sharpVal = value(note(pc(l, Accidental.Sharp), o))
+      const flatVal = note.value(note.note(pc.pc(l, Accidental.Flat), o))
+      const naturalVal = note.value(note.note(pc.pc(l, Accidental.Natural), o))
+      const sharpVal = note.value(note.note(pc.pc(l, Accidental.Sharp), o))
 
       expect(flatVal).toBeLessThan(naturalVal);
       expect(flatVal).toBeLessThan(sharpVal);
@@ -30,35 +34,22 @@ test('value', () => {
   })
 })
 
-test('parseNote', () => {
-  const n = parseNote('c1');
+test('parse', () => {
+  const n = note.parse('c1');
   expect(n.octave).toEqual(1);
   expect(n.pitchClass.letter).toEqual(NoteLetter.C);
   expect(n.pitchClass.accidental).toEqual(Accidental.Natural);
 })
 
 describe.each([
-  [ 'c1', 'M7', 'b1' ],
-  [ 'bb3', 'M2', 'c4' ],
-])('add(%s, %s)', (noteStr, intervalStr, expectedStr) => {
-  test('it adds correctly', () => {
-    const note = parseNote(noteStr);
-    const interval = parseInterval(intervalStr);
-    const expected = parseNote(expectedStr);
-    const result = add(note, interval);
-    expect(noteEqual(result, expected)).toEqual(true);
-  })
-})
-
-describe.each([
   [ 'bb', 'a3', 'bb2' ]
 ])('nextAtOrBelow(%s, %s)', (pitchClassStr, relativeToStr, expectedStr) => {
   test('finds the correct note', () => {
-    const pitchClass = parsePitchClass(pitchClassStr);
-    const relativeTo = parseNote(relativeToStr);
-    const expected = parseNote(expectedStr);
+    const pitchClass = pc.parse(pitchClassStr);
+    const relativeTo = note.parse(relativeToStr);
+    const expected = note.parse(expectedStr);
     const result = nextAtOrBelow(pitchClass, relativeTo);
     expect(result).toBeDefined();
-    expect(noteEqual(result as Note, expected))
+    expect(note.equal(result as Note, expected))
   })
 })

@@ -2,7 +2,13 @@ import React, { useState, useEffect } from 'react';
 
 import Soundfont from 'soundfont-player';
 
-import { Tuning, ScaleKinds, NoteLetters, NoteLetter, parseNote, pc, scale, ScaleKind, Accidental, Accidentals, formatAccidental, PitchClass, formatPitchClass, formatNote, Note } from './theory';
+import { Tuning } from './theory';
+import accidental, { Accidental, Accidentals } from './theory/accidental';
+import { NoteLetters, NoteLetter } from './theory/letter';
+import pc, { PitchClass } from './theory/pitchClass';
+import note, { Note} from './theory/note';
+import { ScaleKinds, scale, ScaleKind } from './theory/scale';
+
 import { getNotesOnString } from './util';
 import { FretboardChart, Marker } from './FretboardChart';
 
@@ -28,7 +34,7 @@ type MarkerText = 'note' | 'degree';
 const App: React.FC = () => {
   const [ fretCount, setFretCount ] = useState(12);
   const [ tuning, setTuning ] = useState(Tuning.mandolin.standard);
-  const [ key, setKey ] = useState<PitchClass>(pc(NoteLetter.G));
+  const [ key, setKey ] = useState<PitchClass>(pc.pc(NoteLetter.G));
   const [ scaleKind, setScaleKind ] = useState<ScaleKind>('major');
   const [ display, setDisplay ] = useState<MarkerText>('note');
 
@@ -46,13 +52,13 @@ const App: React.FC = () => {
       return;
     }
 
-    const noteLabel = formatNote(marker.note, true);
+    const noteLabel = note.format(marker.note, true);
     soundPlayer.play(noteLabel);
   }
 
   useEffect(() => {
     if (soundPlayer && pendingPlayback) {
-      const noteLabel = formatNote(pendingPlayback, true);
+      const noteLabel = note.format(pendingPlayback, true);
       soundPlayer.stop();
       soundPlayer.play(noteLabel);
       setPendingPlayback(undefined);
@@ -60,13 +66,13 @@ const App: React.FC = () => {
   }, [ soundPlayer, pendingPlayback ]);
 
   const selectedScale = scale(key, ScaleKinds[scaleKind]);
-  const stringNotes = tuning.map(parseNote);
+  const stringNotes = tuning.map(note.parse);
   const markers = stringNotes.flatMap((n, i) => {
     const notes = getNotesOnString(n, fretCount, selectedScale);
     return notes.map(fretboardNote => ({
       string: i,
       fret: fretboardNote.fret,
-      label: display === 'degree' ? String(fretboardNote.degree) : formatPitchClass(fretboardNote.note.pitchClass),
+      label: display === 'degree' ? String(fretboardNote.degree) : pc.format(fretboardNote.note.pitchClass),
       note: fretboardNote.note,
     }))
   })
@@ -134,12 +140,12 @@ const KeySelector: React.FC<{value: PitchClass, onChange: (pitchClass: PitchClas
     const newLetter = e.currentTarget.value as NoteLetter;
     const newAccidental = value.accidental;
 
-    onChange(pc(newLetter, newAccidental));
+    onChange(pc.pc(newLetter, newAccidental));
   }
 
   const handleAccidentalChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newAccidental = parseInt(e.currentTarget.value, 10) as Accidental;
-    onChange(pc(value.letter, newAccidental));
+    onChange(pc.pc(value.letter, newAccidental));
   }
   
   return (
@@ -149,7 +155,7 @@ const KeySelector: React.FC<{value: PitchClass, onChange: (pitchClass: PitchClas
       {NoteLetters.map(n => <option key={n} value={n}>{NoteLetter[n]}</option>)}
     </select>
     <select value={value.accidental} onChange={handleAccidentalChange}>
-      {Accidentals.map(a => <option key={a} value={a}>{formatAccidental(a)}</option>)}
+      {Accidentals.map(a => <option key={a} value={a}>{accidental.format(a)}</option>)}
     </select>
     </div>
   )

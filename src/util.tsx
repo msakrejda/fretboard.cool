@@ -1,4 +1,7 @@
-import { Note, Scale, Chord, nextAtOrBelow, value, P, add } from './theory';
+import { P, add } from './theory/interval';
+import { Note, value, nextAtOrBelow } from './theory/note';
+import { Scale } from './theory/scale';
+import { Chord } from './theory/chord';
 
 export const translate = (x: number, y: number):string => `translate(${x},${y})`;
 

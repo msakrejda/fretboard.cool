@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { translate, scaleLength, fretPositions, stringPositions } from './util';
-import { Note } from './theory';
+import { Note } from './theory/note';
 
 type SizeProps = {
   width: number;
