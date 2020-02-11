@@ -2,20 +2,7 @@ import React from 'react';
 
 import { translate, scaleLength, fretPositions, stringPositions } from './util';
 import { Note } from './theory';
-/*
 
- - fingerboard
- - fretboard dots?
- - frets
- - nut
- - strings
-
- - fret numbers
-
- - open / muted notes
- - note markers
-
-*/
 type SizeProps = {
   width: number;
   height: number;
@@ -43,34 +30,38 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
 }) => {
   const numberedFrets = [ 3, 5, 7, 9, 12 ].filter(f => f <= fretCount);
 
-  const leftMargin = 20;
-  const rightMargin = 20;
+  const minMargin = 20;
   const bottomMargin = 10;
   const topMargin = 30;
+  const maxFretboardWidth = tuning.length * 30;
   const fretboardSize = {
-    width: width - leftMargin - rightMargin,
+    width: Math.min(width - 2 * minMargin, maxFretboardWidth),
     height: height - topMargin - bottomMargin,
   }
+  const leftMargin = (width - fretboardSize.width) / 2;
 
-  const scaleLen = scaleLength(fretCount, fretboardSize.height);
-  // TODO: account for string and fret width in positioning
-  const fretPos = fretPositions(fretCount, scaleLen);
-  const stringPos = stringPositions(tuning.length, fretboardSize.width);
-  const smallestFretDistance = fretPos[fretPos.length - 1] - fretPos[fretPos.length - 2];
   const nutWidth = 4;
   const fretWidth = 2;
   const stringWidth = 2;
+
+  const scaleLen = scaleLength(fretCount, fretboardSize.height);
+  // TODO: account for string and fret width in positioning
+  const fretPos = fretPositions(fretCount, scaleLen, fretWidth);
+  const stringPos = stringPositions(tuning.length, fretboardSize.width, stringWidth);
+  const smallestFretDistance = fretPos[fretPos.length - 1] - fretPos[fretPos.length - 2];
   // TODO: fix positioning of open string markers--this is just a rough guess
   const openStringMarkerOffset = topMargin - 15;
   const markerRadius = Math.max(1, 
     Math.min(
-      (smallestFretDistance - fretWidth - 2) / 2,
-      (stringPos[1] - stringPos[0] - stringWidth - 2) / 2,
-      (topMargin - openStringMarkerOffset - 1), // distance to nut
-      openStringMarkerOffset - 1 // distance to top of chart
-    )
+      (smallestFretDistance - fretWidth) / 2,
+      (stringPos[1] - stringPos[0] - stringWidth) / 2,
+      (topMargin - openStringMarkerOffset), // distance to nut
+      openStringMarkerOffset // distance to top of chart
+    ) - 1 // we want at least one pixel clearance from any of the above
   );
-  const markerY = (fret: number):number => {
+  const markerX = (m: Marker): number => stringPos[m.string]
+  const markerY = (m: Marker):number => {
+    const fret = m.fret;
     if (fret === 0) {
       return -openStringMarkerOffset;
     }
@@ -102,7 +93,7 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
           </Translate>
         ))}
         {markers.map((marker, i) => (
-          <Translate key={i} x={stringPos[marker.string]} y={markerY(marker.fret)}>
+          <Translate key={i} x={markerX(marker)} y={markerY(marker)}>
             <FretMarker marker={marker} radius={markerRadius} onClick={onMarkerClick}/>
           </Translate>
         ))}
