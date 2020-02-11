@@ -92,7 +92,7 @@ const App: React.FC = () => {
           <KeySelector value={key} onChange={setKey} mode={mode} />
           {mode === 'scale' && <ScaleSelector value={scaleKind} onChange={setScaleKind} />}
           {mode === 'arpeggio' && <ChordSelector value={chordKind} onChange={setChordKind} />}
-          <DisplaySelector value={display} onChange={setDisplay} />
+          <DisplaySelector value={display} onChange={setDisplay} mode={mode}/>
         </div>
       </div>
       <div className="Footer">
@@ -102,7 +102,7 @@ const App: React.FC = () => {
   );
 }
 
-const DisplaySelector: React.FC<{value: MarkerLabel, onChange: (display: MarkerLabel) => void}> = ({value, onChange}) => {
+const DisplaySelector: React.FC<{value: MarkerLabel, onChange: (display: MarkerLabel) => void, mode: MarkerMode}> = ({value, onChange, mode}) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.currentTarget.value as MarkerLabel);
   }
@@ -111,7 +111,7 @@ const DisplaySelector: React.FC<{value: MarkerLabel, onChange: (display: MarkerL
       label:
       <label>
         <input type="radio" name="display" value='degree' checked={value === 'degree'} onChange={handleChange} />  
-        scale degree
+        {mode === 'scale' ? 'scale degree' : 'chord tone'}
       </label>
       <label>
         <input type="radio" name="display" value='note' checked={value === 'note'} onChange={handleChange} />
