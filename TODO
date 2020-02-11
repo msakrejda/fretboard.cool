@@ -1,6 +1,7 @@
-* support arpeggio
+* list chord tones / scale degrees
 * choose marker colors
 * custom tuning
 * add router with routes for all parameters
 * key-oriented navigation (pick key, then easily switch I / II / IV / V / etc.)
 * superimpose arpeggios on scale
+* vendor soundfont

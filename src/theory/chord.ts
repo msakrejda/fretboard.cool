@@ -11,3 +11,12 @@ export const ChordKinds = {
   minor: [ P(1), m(3), P(5) ],
   'dominant 7': [ P(1), m(3), P(5), m(7) ],
 } as const;
+
+export type ChordKind = keyof typeof ChordKinds;
+
+export const chord = (pitchClass: PitchClass, intervals: readonly Interval[]): Chord => {
+  return {
+    pitchClass,
+    intervals
+  }
+}

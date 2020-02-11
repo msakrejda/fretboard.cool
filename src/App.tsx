@@ -7,7 +7,8 @@ import accidental, { Accidental, Accidentals } from './theory/accidental';
 import { NoteLetters, NoteLetter } from './theory/letter';
 import pc, { PitchClass } from './theory/pitchClass';
 import note, { Note} from './theory/note';
-import { ScaleKinds, scale, ScaleKind } from './theory/scale';
+import { scale, ScaleKind, ScaleKinds } from './theory/scale';
+import { chord, ChordKind, ChordKinds } from './theory/chord';
 
 import { getNotesOnString } from './util';
 import { FretboardChart, Marker } from './FretboardChart';
@@ -29,14 +30,17 @@ where:
 
 */
 
-type MarkerText = 'note' | 'degree';
+type MarkerLabel = 'note' | 'degree';
+type MarkerMode = 'scale' | 'arpeggio';
 
 const App: React.FC = () => {
   const [ fretCount, setFretCount ] = useState(12);
   const [ tuning, setTuning ] = useState(Tuning.mandolin.standard);
   const [ key, setKey ] = useState<PitchClass>(pc.pc(NoteLetter.G));
+  const [ mode, setMode ] = useState<MarkerMode>('scale');
   const [ scaleKind, setScaleKind ] = useState<ScaleKind>('major');
-  const [ display, setDisplay ] = useState<MarkerText>('note');
+  const [ chordKind, setChordKind ] = useState<ChordKind>('major');
+  const [ display, setDisplay ] = useState<MarkerLabel>('note');
 
   const [ pendingPlayback, setPendingPlayback ] = useState<Note | undefined>();
   const [ soundPlayer, setSoundPlayer ] = useState<Soundfont.Player | undefined>();
@@ -65,10 +69,10 @@ const App: React.FC = () => {
     }
   }, [ soundPlayer, pendingPlayback ]);
 
-  const selectedScale = scale(key, ScaleKinds[scaleKind]);
+  const selected = mode === 'scale' ? scale(key, ScaleKinds[scaleKind]) : chord(key, ChordKinds[chordKind]);
   const stringNotes = tuning.map(note.parse);
   const markers = stringNotes.flatMap((n, i) => {
-    const notes = getNotesOnString(n, fretCount, selectedScale);
+    const notes = getNotesOnString(n, fretCount, selected);
     return notes.map(fretboardNote => ({
       string: i,
       fret: fretboardNote.fret,
@@ -84,8 +88,10 @@ const App: React.FC = () => {
         <div>
           <FretCountSelector value={fretCount} onChange={setFretCount} />
           <TuningSelector value={tuning} onChange={setTuning} />
-          <KeySelector value={key} onChange={setKey} />
-          <ScaleSelector value={scaleKind} onChange={setScaleKind} />
+          <ModeSelector value={mode} onChange={setMode} />
+          <KeySelector value={key} onChange={setKey} mode={mode} />
+          {mode === 'scale' && <ScaleSelector value={scaleKind} onChange={setScaleKind} />}
+          {mode === 'arpeggio' && <ChordSelector value={chordKind} onChange={setChordKind} />}
           <DisplaySelector value={display} onChange={setDisplay} />
         </div>
       </div>
@@ -96,13 +102,13 @@ const App: React.FC = () => {
   );
 }
 
-const DisplaySelector: React.FC<{value: MarkerText, onChange: (display: MarkerText) => void}> = ({value, onChange}) => {
+const DisplaySelector: React.FC<{value: MarkerLabel, onChange: (display: MarkerLabel) => void}> = ({value, onChange}) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.currentTarget.value as MarkerText);
+    onChange(e.currentTarget.value as MarkerLabel);
   }
   return (
     <div>
-      show
+      label:
       <label>
         <input type="radio" name="display" value='degree' checked={value === 'degree'} onChange={handleChange} />  
         scale degree
@@ -110,6 +116,25 @@ const DisplaySelector: React.FC<{value: MarkerText, onChange: (display: MarkerTe
       <label>
         <input type="radio" name="display" value='note' checked={value === 'note'} onChange={handleChange} />
         note name
+      </label>
+    </div>
+  )
+}
+
+const ModeSelector: React.FC<{value: MarkerMode, onChange: (mode: MarkerMode) => void}> = ({value, onChange}) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    onChange(e.currentTarget.value as MarkerMode);
+  }
+  return (
+    <div>
+      mode:
+      <label>
+        <input type="radio" name="mode" value='scale' checked={value === 'scale'} onChange={handleChange} />  
+        scale
+      </label>
+      <label>
+        <input type="radio" name="mode" value='arpeggio' checked={value === 'arpeggio'} onChange={handleChange} />
+        arpeggio
       </label>
     </div>
   )
@@ -126,7 +151,24 @@ const ScaleSelector: React.FC<{value: ScaleKind, onChange: (scale: ScaleKind) =>
   
   return (
     <div>
-      scale:
+      <select value={value} onChange={handleChange}>
+        {options}
+      </select>
+    </div>
+  )
+}
+
+const ChordSelector: React.FC<{value: ChordKind, onChange: (chord: ChordKind) => void}> = ({value, onChange}) => {
+  const options = Object.keys(ChordKinds).map(chord => {
+    return <option key={chord} value={chord}>{chord}</option>
+  })
+
+  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    onChange(e.currentTarget.value as ChordKind);
+  }
+  
+  return (
+    <div>
       <select value={value} onChange={handleChange}>
         {options}
       </select>
@@ -135,7 +177,7 @@ const ScaleSelector: React.FC<{value: ScaleKind, onChange: (scale: ScaleKind) =>
 }
 
 
-const KeySelector: React.FC<{value: PitchClass, onChange: (pitchClass: PitchClass) => void}> = ({value, onChange}) => {
+const KeySelector: React.FC<{value: PitchClass, onChange: (pitchClass: PitchClass) => void, mode: MarkerMode}> = ({value, onChange, mode}) => {
   const handleLetterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const newLetter = e.currentTarget.value as NoteLetter;
     const newAccidental = value.accidental;
@@ -150,7 +192,7 @@ const KeySelector: React.FC<{value: PitchClass, onChange: (pitchClass: PitchClas
   
   return (
     <div>
-    key:
+    {mode === 'scale' ? 'key' : 'root'}
     <select value={value.letter} onChange={handleLetterChange}>
       {NoteLetters.map(n => <option key={n} value={n}>{NoteLetter[n]}</option>)}
     </select>
