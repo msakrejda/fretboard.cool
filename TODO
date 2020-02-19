@@ -1,8 +1,20 @@
+before shipping:
 * list chord tones / scale degrees
+* play arpeggio / scale up and down
+* hover or select to change color or animate
 * choose marker colors
 * custom tuning
 * add router with routes for all parameters
-* key-oriented navigation (pick key, then easily switch I / II / IV / V / etc.)
 * superimpose arpeggios on scale
 * vendor soundfont
 * animate transitions
+* create favicon
+* reasonable on mobile
+* lint
+* adjust chord / arpeggio to tuning + fret count
+* deal with large fret count better (or limit fret count to smaller values)
+
+later:
+* key-oriented navigation (pick key, then easily switch I / II / IV / V / etc.)
+* multiple diagrams on screen at the same time
+* print css
