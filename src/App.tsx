@@ -10,7 +10,7 @@ import note, { Note} from './theory/note';
 import { scale, ScaleKind, ScaleKinds } from './theory/scale';
 import { chord, ChordKind, ChordKinds } from './theory/chord';
 
-import { getNotesOnString } from './util';
+import { getNotesInRange } from './theory/interval';
 import { FretboardChart, Marker } from './FretboardChart';
 
 import './App.css';
@@ -72,11 +72,12 @@ const App: React.FC = () => {
   const selected = mode === 'scale' ? scale(key, ScaleKinds[scaleKind]) : chord(key, ChordKinds[chordKind]);
   const stringNotes = tuning.map(note.parse);
   const markers = stringNotes.flatMap((n, i) => {
-    const notes = getNotesOnString(n, fretCount, selected);
+    const startVal = note.value(n);
+    const notes = getNotesInRange(n, fretCount, selected);
     return notes.map(fretboardNote => ({
       string: i,
-      fret: fretboardNote.fret,
-      label: display === 'degree' ? String(fretboardNote.degree) : pc.format(fretboardNote.note.pitchClass),
+      fret: note.value(fretboardNote.note) - startVal,
+      label: display === 'degree' ? String(fretboardNote.index) : pc.format(fretboardNote.note.pitchClass),
       note: fretboardNote.note,
     }))
   })

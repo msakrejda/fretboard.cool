@@ -1,8 +1,8 @@
 import { NoteLetters, nextLetterSemitones } from './letter';
-import { pc } from './pitchClass';
+import { pc, PitchClass } from './pitchClass';
 import quality, { Quality } from './quality';
 import { Accidental } from './accidental';
-import note, { Note } from './note';
+import note, { Note, nextAtOrBelow, value } from './note';
 
 type MajorMinorIntervalNumber = 2 | 3 | 6 | 7;
 type PerfectIntervalNumber = 1 | 4 | 5 | 8;
@@ -111,6 +111,49 @@ export const add = (n: Note, interval: Interval):Note => {
 
   return note.note(pc(newNoteLetter, newAccidental), newOctave);
 }
+
+export interface PitchClassSequence {
+  readonly root: PitchClass,
+  readonly intervals: readonly Interval[]
+}
+
+type SequenceNote = {
+  note: Note,
+  index: number,
+}
+
+export const getNotesInRange = (startingAt: Note, semitones: number, from: PitchClassSequence): SequenceNote[] => {
+  const lowestRoot = nextAtOrBelow(from.root, startingAt);
+  const result: SequenceNote[] = [];
+  if (!lowestRoot) {
+    return result;
+  }
+  const startValue = value(startingAt)
+  const maxValue = startValue + semitones;
+  let currInterval = 0;
+  let currRoot = lowestRoot;
+  let curr = currRoot;
+  let currValue = value(curr);
+  while (currValue <= maxValue) {
+    const currSemitones = currValue - startValue;
+    if (currSemitones >= 0) {
+      result.push({
+        note: curr,
+        index: from.intervals[currInterval].number,
+      })
+    }
+
+    currInterval += 1;
+    if (currInterval === from.intervals.length) {
+      currInterval = 0;
+      currRoot = add(currRoot, P(8));
+    }
+    curr = add(currRoot, from.intervals[currInterval]);
+    currValue = value(curr);
+  }
+  return result;
+}
+
 
 export const format = (i: Interval): string => {
   return quality.format(i.quality) + String(i.number);
