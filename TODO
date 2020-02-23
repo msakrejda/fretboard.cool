@@ -1,13 +1,12 @@
 before shipping:
-* list chord tones / scale degrees
 * play arpeggio / scale up and down
 * hover or select to change color or animate
 * choose marker colors
 * custom tuning
 * add router with routes for all parameters
-* superimpose arpeggios on scale
 * vendor soundfont
 * animate transitions
+* add about page
 * create favicon
 * reasonable on mobile
 * lint
@@ -18,3 +17,4 @@ later:
 * key-oriented navigation (pick key, then easily switch I / II / IV / V / etc.)
 * multiple diagrams on screen at the same time
 * print css
+* superimpose arpeggios on scale maybe?

@@ -14,3 +14,12 @@
   text-align: center;
   width: 100%;
 }
+
+.NoteList {
+  line-height: 1.7;
+}
+
+.NoteList svg {
+  vertical-align: middle;
+  font-size: 80%;
+}

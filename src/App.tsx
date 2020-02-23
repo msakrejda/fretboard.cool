@@ -10,10 +10,37 @@ import note, { Note} from './theory/note';
 import { scale, ScaleKind, ScaleKinds } from './theory/scale';
 import { chord, ChordKind, ChordKinds } from './theory/chord';
 
-import { getNotesInRange } from './theory/interval';
-import { FretboardChart, Marker } from './FretboardChart';
+import interval, { add, getNotesInRange, PitchClassSequence } from './theory/interval';
+import { FretboardChart, Marker, FretMarker } from './FretboardChart';
 
 import './App.css';
+import { Translate } from './svg/Translate';
+
+const colors = {
+   c1a: '#267257',
+   c1b: '#72AB97',
+   c1c: '#478E75',
+   c1d: '#0E553C',
+   c1e: '#003925',
+
+   c2a: '#2A4D6E',
+   c2b: '#728CA6',
+   c2c: '#4A6B8A',
+   c2d: '#133353',
+   c2e: '#041E37',
+
+   c3a: '#AA7C39',
+   c3b: '#FFDCAA',
+   c3c: '#D4A96A',
+   c3d: '#805415',
+   c3e: '#553200',
+
+   c4a: '#AA5D39',
+   c4b: '#FFC6AA',
+   c4c: '#D48D6A',
+   c4d: '#803815',
+   c4e: '#551C00',
+}
 
 /*
 
@@ -94,6 +121,7 @@ const App: React.FC = () => {
           {mode === 'scale' && <ScaleSelector value={scaleKind} onChange={setScaleKind} />}
           {mode === 'arpeggio' && <ChordSelector value={chordKind} onChange={setChordKind} />}
           <DisplaySelector value={display} onChange={setDisplay} mode={mode}/>
+          <NoteList notes={selected} />
         </div>
       </div>
       <div className="Footer">
@@ -101,6 +129,33 @@ const App: React.FC = () => {
       </div>
     </div>
   );
+}
+
+const NoteList: React.FC<{notes: PitchClassSequence}> = ({notes}) => {
+  const markerRadius = 10;
+  const strokeWidth = 1;
+  const width = markerRadius * 2 + 2 * strokeWidth;
+  const height = markerRadius * 2 + 2 * strokeWidth;
+  const rootNote = note.note(notes.root, 4)
+  return (
+    <div>
+      <ol className="NoteList">
+        {notes.intervals.map((int, i) => {
+          const currNote = add(rootNote, int);
+          const label = pc.format(currNote.pitchClass)
+          const handleMarkerClick = () => {}
+          const ListMarker: React.FC<{label: string}> = ({label}) => {
+            return <Translate x={markerRadius + strokeWidth} y={markerRadius + strokeWidth}>
+              <circle r={markerRadius} fill='white' stroke='black' strokeWidth={strokeWidth} onClick={handleMarkerClick} />
+              <text dominantBaseline='middle' textAnchor='middle' pointerEvents='none'>{label}</text>
+            </Translate>
+          }
+
+          return <li><svg width={width} height={height}><ListMarker label={label} /></svg> {i === 0 ? 'root' : interval.format(int)}</li>
+        })}
+      </ol>
+    </div>
+  )
 }
 
 const DisplaySelector: React.FC<{value: MarkerLabel, onChange: (display: MarkerLabel) => void, mode: MarkerMode}> = ({value, onChange, mode}) => {

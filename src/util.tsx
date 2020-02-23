@@ -1,5 +1,3 @@
-export const translate = (x: number, y: number):string => `translate(${x},${y})`;
-
 export const scaleLength = (fretCount:number, fretboardLen: number):number => {
   const lastFretPos = fretboardLen;
   const lastFretNum = fretCount;

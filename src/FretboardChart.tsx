@@ -1,7 +1,8 @@
 import React from 'react';
 
-import { translate, scaleLength, fretPositions, stringPositions } from './util';
+import { scaleLength, fretPositions, stringPositions } from './util';
 import { Note } from './theory/note';
+import { Translate } from './svg/Translate';
 
 type SizeProps = {
   width: number;
@@ -102,7 +103,7 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
   )
 }
 
-const FretMarker: React.FunctionComponent<{ marker: Marker, radius: number, onClick: (marker: Marker) => void }> = ({marker, radius, onClick}) => {
+export const FretMarker: React.FunctionComponent<{ marker: Marker, radius: number, onClick: (marker: Marker) => void }> = ({marker, radius, onClick}) => {
   const handleMarkerClick = () => {
     onClick(marker);
   }
@@ -133,10 +134,4 @@ const String: React.FunctionComponent<SizeProps> = (props) => {
 
 const FretNumber: React.FC<{label: string}> = ({label}) => {
   return <text dominantBaseline='middle' textAnchor='end'>{label}&nbsp;</text>
-}
-
-const Translate: React.FunctionComponent<{x?: number, y?: number}> = ({
-  x = 0, y = 0, children
-}) => {
-  return <g transform={translate(x, y)}>{children}</g>
 }
