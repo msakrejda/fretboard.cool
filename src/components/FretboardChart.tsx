@@ -1,8 +1,10 @@
 import React from 'react';
 
-import { scaleLength, fretPositions, stringPositions } from './util';
-import { Note } from './theory/note';
-import { Translate } from './svg/Translate';
+import { scaleLength, fretPositions, stringPositions } from '../util';
+import { Note } from '../theory/note';
+import { Translate } from '../svg/Translate';
+
+import './FretboardChart.css';
 
 type SizeProps = {
   width: number;
@@ -14,6 +16,7 @@ export type Marker = {
   fret: number;
   label: string;
   note: Note;
+  fill: string;
 }
 
 export const FretboardChart: React.FunctionComponent<SizeProps & {
@@ -46,11 +49,11 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
   const stringWidth = 2;
 
   const scaleLen = scaleLength(fretCount, fretboardSize.height);
-  // TODO: account for string and fret width in positioning
+
   const fretPos = fretPositions(fretCount, scaleLen, fretWidth);
   const stringPos = stringPositions(tuning.length, fretboardSize.width, stringWidth);
   const smallestFretDistance = fretPos[fretPos.length - 1] - fretPos[fretPos.length - 2];
-  // TODO: fix positioning of open string markers--this is just a rough guess
+
   const openStringMarkerOffset = topMargin - 15;
   const markerRadius = Math.max(1, 
     Math.min(
@@ -105,11 +108,11 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
 
 export const FretMarker: React.FunctionComponent<{ marker: Marker, radius: number, onClick: (marker: Marker) => void }> = ({marker, radius, onClick}) => {
   const handleMarkerClick = () => {
-    onClick(marker);
+    onClick(marker)
   }
   return (
     <>
-      <circle r={radius} fill='white' stroke='black' strokeWidth={1} onClick={handleMarkerClick} />
+      <circle className='FretMarker' r={radius} fill={marker.fill} stroke='black' strokeWidth={1} onClick={handleMarkerClick} />
       <text dominantBaseline='middle' textAnchor='middle' pointerEvents='none'>{marker.label}</text>
     </>
   );
@@ -127,7 +130,7 @@ const Fret: React.FunctionComponent<SizeProps> = (props) => {
   return <rect fill='darkslategray' {...props} />
 }
 
-// TODO: rename--this clashes with built-in String function
+// TODO: rename--this shadows built-in String function
 const String: React.FunctionComponent<SizeProps> = (props) => {
   return <rect fill='#6d432f' {...props} />
 }

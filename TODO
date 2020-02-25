@@ -1,14 +1,10 @@
 before shipping:
-* play arpeggio / scale up and down
-* hover or select to change color or animate
-* choose marker colors
-* custom tuning
+* toggle selected pitchClass instead of temp highlight
 * add router with routes for all parameters
 * vendor soundfont
 * animate transitions
 * add about page
-* create favicon
-* reasonable on mobile
+* mobile
 * lint
 * adjust chord / arpeggio to tuning + fret count
 * deal with large fret count better (or limit fret count to smaller values)
@@ -18,3 +14,5 @@ later:
 * multiple diagrams on screen at the same time
 * print css
 * superimpose arpeggios on scale maybe?
+* choose marker colors
+* custom tuning

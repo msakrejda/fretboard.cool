@@ -2,19 +2,20 @@ import React, { useState, useEffect } from 'react';
 
 import Soundfont from 'soundfont-player';
 
-import { Tuning } from './theory';
-import accidental, { Accidental, Accidentals } from './theory/accidental';
-import { NoteLetters, NoteLetter } from './theory/letter';
-import pc, { PitchClass } from './theory/pitchClass';
-import note, { Note} from './theory/note';
-import { scale, ScaleKind, ScaleKinds } from './theory/scale';
-import { chord, ChordKind, ChordKinds } from './theory/chord';
+import { Tuning } from '../theory';
+import accidental, { Accidental, Accidentals } from '../theory/accidental';
+import { NoteLetters, NoteLetter } from '../theory/letter';
+import pc, { PitchClass } from '../theory/pitchClass';
+import note, { Note} from '../theory/note';
+import { scale, ScaleKind, ScaleKinds } from '../theory/scale';
+import { chord, ChordKind, ChordKinds } from '../theory/chord';
 
-import interval, { add, getNotesInRange, PitchClassSequence } from './theory/interval';
+import interval, { add, getNotesInRange, PitchClassSequence } from '../theory/interval';
 import { FretboardChart, Marker, FretMarker } from './FretboardChart';
 
 import './App.css';
-import { Translate } from './svg/Translate';
+import { Translate } from '../svg/Translate';
+import { useStateWhileMounted } from '../hooks';
 
 const colors = {
    c1a: '#267257',
@@ -72,7 +73,15 @@ const App: React.FC = () => {
   const [ pendingPlayback, setPendingPlayback ] = useState<Note | undefined>();
   const [ soundPlayer, setSoundPlayer ] = useState<Soundfont.Player | undefined>();
 
+  const [ lastClickedPc, setLastClickedPc ] = useStateWhileMounted<PitchClass | undefined>(undefined)
+  const tempSetLastPc = (pc: PitchClass): void => {
+    setLastClickedPc(pc)
+    setTimeout(() => setLastClickedPc(undefined), 3000)
+  }
+
   const handleMarkerClick = (marker: Marker) => {
+    tempSetLastPc(marker.note.pitchClass)
+
     if (!soundPlayer) {
       setPendingPlayback(marker.note);
       const ac = new AudioContext();
@@ -106,6 +115,7 @@ const App: React.FC = () => {
       fret: note.value(fretboardNote.note) - startVal,
       label: display === 'degree' ? String(fretboardNote.index) : pc.format(fretboardNote.note.pitchClass),
       note: fretboardNote.note,
+      fill: lastClickedPc && pc.equal(fretboardNote.note.pitchClass, lastClickedPc) ? 'gold' : 'white'
     }))
   })
 
@@ -121,7 +131,7 @@ const App: React.FC = () => {
           {mode === 'scale' && <ScaleSelector value={scaleKind} onChange={setScaleKind} />}
           {mode === 'arpeggio' && <ChordSelector value={chordKind} onChange={setChordKind} />}
           <DisplaySelector value={display} onChange={setDisplay} mode={mode}/>
-          <NoteList notes={selected} />
+          <NoteList notes={selected} onClick={tempSetLastPc} />
         </div>
       </div>
       <div className="Footer">
@@ -131,11 +141,13 @@ const App: React.FC = () => {
   );
 }
 
-const NoteList: React.FC<{notes: PitchClassSequence}> = ({notes}) => {
+const NoteList: React.FC<{notes: PitchClassSequence, onClick: (pc: PitchClass) => void}> = ({notes, onClick}) => {
   const markerRadius = 10;
   const strokeWidth = 1;
   const width = markerRadius * 2 + 2 * strokeWidth;
   const height = markerRadius * 2 + 2 * strokeWidth;
+  // The octave is not important here, but we need notes instead of pitch classes
+  // since the add function does not support adding an interval to a pitch class (TODO: fix this)
   const rootNote = note.note(notes.root, 4)
   return (
     <div>
@@ -143,7 +155,9 @@ const NoteList: React.FC<{notes: PitchClassSequence}> = ({notes}) => {
         {notes.intervals.map((int, i) => {
           const currNote = add(rootNote, int);
           const label = pc.format(currNote.pitchClass)
-          const handleMarkerClick = () => {}
+          const handleMarkerClick = () => {
+            onClick(currNote.pitchClass)
+          }
           const ListMarker: React.FC<{label: string}> = ({label}) => {
             return <Translate x={markerRadius + strokeWidth} y={markerRadius + strokeWidth}>
               <circle r={markerRadius} fill='white' stroke='black' strokeWidth={strokeWidth} onClick={handleMarkerClick} />
