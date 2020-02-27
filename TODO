@@ -1,12 +1,11 @@
 before shipping:
-* toggle selected pitchClass instead of temp highlight
 * add router with routes for all parameters
+* write README
 * vendor soundfont
 * animate transitions
-* add about page
 * mobile
+* styling
 * lint
-* adjust chord / arpeggio to tuning + fret count
 * deal with large fret count better (or limit fret count to smaller values)
 
 later:
@@ -16,3 +15,4 @@ later:
 * superimpose arpeggios on scale maybe?
 * choose marker colors
 * custom tuning
+* toggle selected pitchClass instead of temp highlight maybe?

@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
+
 import Soundfont from 'soundfont-player';
 
 import { Tuning } from '../theory';
@@ -12,6 +14,9 @@ import { chord, ChordKind, ChordKinds } from '../theory/chord';
 
 import interval, { add, getNotesInRange, PitchClassSequence } from '../theory/interval';
 import { FretboardChart, Marker, FretMarker } from './FretboardChart';
+
+import { About } from './About';
+import { Footer } from './Footer';
 
 import './App.css';
 import { Translate } from '../svg/Translate';
@@ -120,23 +125,32 @@ const App: React.FC = () => {
   })
 
   return (
-    <div>
-      <div className="Main">
-        <FretboardChart markers={markers} onMarkerClick={handleMarkerClick} tuning={tuning} fretCount={fretCount} width={200} height={600} />
-        <div>
-          <FretCountSelector value={fretCount} onChange={setFretCount} />
-          <TuningSelector value={tuning} onChange={setTuning} />
-          <ModeSelector value={mode} onChange={setMode} />
-          <KeySelector value={key} onChange={setKey} mode={mode} />
-          {mode === 'scale' && <ScaleSelector value={scaleKind} onChange={setScaleKind} />}
-          {mode === 'arpeggio' && <ChordSelector value={chordKind} onChange={setChordKind} />}
-          <DisplaySelector value={display} onChange={setDisplay} mode={mode}/>
-          <NoteList notes={selected} onClick={tempSetLastPc} />
-        </div>
-      </div>
-      <div className="Footer">
-        <small>sound playback via FluidR3 sound font Creative Commons Attribution 3.0 License</small>
-      </div>
+    <div className="Content">
+      <Router>
+        <Switch>
+          <Route path='/about'>
+            <About />
+          </Route>
+          <Route path='*'>
+            <div>
+              <div className="Main">
+                <FretboardChart markers={markers} onMarkerClick={handleMarkerClick} tuning={tuning} fretCount={fretCount} width={200} height={600} />
+                <div>
+                  <FretCountSelector value={fretCount} onChange={setFretCount} />
+                  <TuningSelector value={tuning} onChange={setTuning} />
+                  <ModeSelector value={mode} onChange={setMode} />
+                  <KeySelector value={key} onChange={setKey} mode={mode} />
+                  {mode === 'scale' && <ScaleSelector value={scaleKind} onChange={setScaleKind} />}
+                  {mode === 'arpeggio' && <ChordSelector value={chordKind} onChange={setChordKind} />}
+                  <DisplaySelector value={display} onChange={setDisplay} mode={mode}/>
+                  <NoteList notes={selected} onClick={tempSetLastPc} />
+                </div>
+              </div>
+              <Footer />
+            </div>
+          </Route>
+        </Switch>
+      </Router>
     </div>
   );
 }

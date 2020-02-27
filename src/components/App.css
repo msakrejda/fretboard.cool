@@ -1,7 +1,11 @@
-.Main {
-  display: flex;
+.Content {
+  max-width: 500px;
   justify-content: center;
   margin: auto;
+}
+
+.Main {
+  display: flex;
 }
 
 .Footer {
