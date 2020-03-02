@@ -1,7 +1,11 @@
 import { PitchClass } from './pitchClass';
-import { Interval, P, M, m, PitchClassSequence } from './interval';
+import { Interval, P, M, m } from './interval';
 
-export type Scale = PitchClassSequence;
+export interface Scale {
+  readonly name: string;
+  readonly root: PitchClass;
+  readonly intervals: readonly Interval[];
+}
 
 export const ScaleKinds = {
   'major': [ P(1), M(2), M(3), P(4), P(5), M(6), M(7) ],
@@ -12,8 +16,9 @@ export const ScaleKinds = {
 
 export type ScaleKind = keyof typeof ScaleKinds;
 
-export const scale = (root: PitchClass, intervals: readonly Interval[]): Scale => {
+export const scale = (name: string, root: PitchClass, intervals: readonly Interval[]): Scale => {
   return {
+    name,
     root,
     intervals
   }

@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { scaleLength, fretPositions, stringPositions } from '../util';
+import { scaleLength, fretPositions, stringPositions, Tuning } from '../util';
 import { Note } from '../theory/note';
 import { Translate } from '../svg/Translate';
 
@@ -20,8 +20,8 @@ export type Marker = {
 }
 
 export const FretboardChart: React.FunctionComponent<SizeProps & {
-  markers: Marker[],
-  tuning: string[],
+  markers: readonly Marker[],
+  tuning: Tuning,
   fretCount: number,
   onMarkerClick: (marker: Marker) => void,
 }> = ({
@@ -37,7 +37,7 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
   const minMargin = 20;
   const bottomMargin = 10;
   const topMargin = 30;
-  const maxFretboardWidth = tuning.length * 30;
+  const maxFretboardWidth = tuning.notes.length * 30;
   const fretboardSize = {
     width: Math.min(width - 2 * minMargin, maxFretboardWidth),
     height: height - topMargin - bottomMargin,
@@ -51,7 +51,7 @@ export const FretboardChart: React.FunctionComponent<SizeProps & {
   const scaleLen = scaleLength(fretCount, fretboardSize.height);
 
   const fretPos = fretPositions(fretCount, scaleLen, fretWidth);
-  const stringPos = stringPositions(tuning.length, fretboardSize.width, stringWidth);
+  const stringPos = stringPositions(tuning.notes.length, fretboardSize.width, stringWidth);
   const smallestFretDistance = fretPos[fretPos.length - 1] - fretPos[fretPos.length - 2];
 
   const openStringMarkerOffset = topMargin - 15;

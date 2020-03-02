@@ -1,7 +1,11 @@
 import { PitchClass } from './pitchClass';
-import { Interval, P, M, m, PitchClassSequence } from './interval';
+import { Interval, P, M, m } from './interval';
 
-export type Chord = PitchClassSequence;
+export interface Chord {
+  readonly name: string;
+  readonly root: PitchClass;
+  readonly intervals: readonly Interval[];
+}
 
 export const ChordKinds = {
   major: [ P(1), M(3), P(5) ],
@@ -11,8 +15,9 @@ export const ChordKinds = {
 
 export type ChordKind = keyof typeof ChordKinds;
 
-export const chord = (root: PitchClass, intervals: readonly Interval[]): Chord => {
+export const chord = (name: string, root: PitchClass, intervals: readonly Interval[]): Chord => {
   return {
+    name,
     root,
     intervals
   }
