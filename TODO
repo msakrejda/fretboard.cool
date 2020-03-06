@@ -1,12 +1,10 @@
 before shipping:
+* mobile
+* styling
 * write README
 * vendor soundfont
 * animate transitions
-* mobile
-* styling
 * lint
-* deal with large fret count better (or limit fret count to smaller values)
-* robust to url hacking
 
 later:
 * key-oriented navigation (pick key, then easily switch I / II / IV / V / etc.)

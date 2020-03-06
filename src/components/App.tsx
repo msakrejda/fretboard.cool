@@ -177,7 +177,7 @@ const FretCountSelector: React.FC<{value: number, onChange: (count: number) => v
     onChange(parseInt(e.currentTarget.value, 10));
   }
   return <div>
-    <label>frets: <input type="number" min={3} max={24} value={value} onChange={handleFretCountChange} /></label>
+    <label>frets: <input type="number" min={3} max={15} value={value} onChange={handleFretCountChange} /></label>
   </div>
 }
 
