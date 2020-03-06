@@ -1,4 +1,4 @@
-import { PitchClass } from './pitchClass';
+import pc, { PitchClass } from './pitchClass';
 import { Interval, P, M, m } from './interval';
 
 export interface Chord {
@@ -21,4 +21,20 @@ export const chord = (name: string, root: PitchClass, intervals: readonly Interv
     root,
     intervals
   }
+}
+
+const urlEncode = (s: Chord): [ string, string ] => {
+  return [ encodeURIComponent(pc.format(s.root, true).toLowerCase()), s.name ]
+}
+
+const urlDecode = (pcStr: string, nameStr: string): Chord => {
+  const root = pc.parse(decodeURIComponent(pcStr));
+  const name = decodeURIComponent(nameStr);
+  const intervals = ChordKinds[name as keyof typeof ChordKinds];
+  return chord(name, root, intervals);
+}
+
+export default {
+  urlEncode,
+  urlDecode,
 }

@@ -1,5 +1,4 @@
 before shipping:
-* add router with routes for all parameters
 * write README
 * vendor soundfont
 * animate transitions

@@ -1,4 +1,4 @@
-import { PitchClass } from './pitchClass';
+import pc, { PitchClass } from './pitchClass';
 import { Interval, P, M, m } from './interval';
 
 export interface Scale {
@@ -22,4 +22,20 @@ export const scale = (name: string, root: PitchClass, intervals: readonly Interv
     root,
     intervals
   }
+}
+
+const urlEncode = (s: Scale): [ string, string ] => {
+  return [ encodeURIComponent(pc.format(s.root, true).toLowerCase()), s.name ]
+}
+
+const urlDecode = (pcStr: string, nameStr: string): Scale => {
+  const root = pc.parse(decodeURIComponent(pcStr));
+  const name = decodeURIComponent(nameStr);
+  const intervals = ScaleKinds[name as keyof typeof ScaleKinds];
+  return scale(name, root, intervals);
+}
+
+export default {
+  urlEncode,
+  urlDecode,
 }

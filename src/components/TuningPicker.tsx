@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Tuning, Tunings } from '../util';
+import { Tuning, Tunings } from '../tuning';
 
 export const TuningPicker: React.FC<{value: Tuning, onChange: (newTuning: Tuning) => void}> = ({value, onChange}) => {
   const options = Tunings.map(tuning => {

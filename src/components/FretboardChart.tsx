@@ -1,6 +1,7 @@
 import React from 'react';
 
-import { scaleLength, fretPositions, stringPositions, Tuning } from '../util';
+import { scaleLength, fretPositions, stringPositions } from '../util';
+import { Tuning } from '../tuning';
 import { Note } from '../theory/note';
 import { Translate } from '../svg/Translate';
 
