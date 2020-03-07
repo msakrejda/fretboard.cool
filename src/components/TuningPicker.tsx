@@ -8,7 +8,6 @@ export const TuningPicker: React.FC<{value: Tuning, onChange: (newTuning: Tuning
   const [ instrument, setInstrument ] = useState(value.instrument)
   const [ tuningName, setTuning ] = useState(value.name)
   useEffect(() => {
-    console.log('setting tuning', instrument, tuningName)
     const instrumentTuning = Tunings.find(t => t.instrument === instrument && t.name === tuningName);
     if (instrumentTuning) {
       onChange(instrumentTuning)
@@ -26,8 +25,11 @@ export const TuningPicker: React.FC<{value: Tuning, onChange: (newTuning: Tuning
  
   return (
     <div className="TuningPicker">
+      For
       <Dropdown value={instrument} options={instrumentOptions} onChange={handleInstrumentChange} />
+      in
       <Dropdown value={tuningName} options={tuningOptions} onChange={setTuning} />
+      tuning
     </div>
   )
 }

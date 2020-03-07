@@ -1,13 +1,10 @@
 import React from 'react';
 
-type DropdownOption = string | {
-  label: string;
-  value: string;
-};
+import { SelectionOption } from './types';
 
 export const Dropdown: React.FC<{
   value:string,
-  options: DropdownOption[],
+  options: SelectionOption[],
   onChange: (newValue: string) => void,
 }> = ({value, options, onChange}) => {
   const handleChange = (e: React.ChangeEvent<HTMLSelectElement>): void => {

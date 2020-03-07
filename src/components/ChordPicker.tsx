@@ -2,12 +2,14 @@ import React from 'react';
 
 import { ChordKind, ChordKinds, chord } from '../theory/chord';
 
-import { PitchClassPicker } from './PitchClassPicker';
-import { PitchClass } from '../theory/pitchClass';
 import { useChord } from '../hooks';
 
-import './ChordPicker.css';
+import { PitchClassPicker } from './PitchClassPicker';
+import { PitchClass } from '../theory/pitchClass';
+
 import { Dropdown } from './Dropdown';
+
+import './App.css';
 
 export const ChordPicker: React.FC = () => {
   const [ current, setCurrent ] = useChord();
@@ -24,7 +26,7 @@ export const ChordPicker: React.FC = () => {
 
   return (
     <div className="ChordPicker">
-      root:
+      of
       <PitchClassPicker value={current.root} onChange={handleRootChange} />
       <Dropdown value={current.name} options={Object.keys(ChordKinds)} onChange={handleKindChange} />
     </div>

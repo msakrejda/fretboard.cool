@@ -4,7 +4,7 @@ import { scale, ScaleKind, ScaleKinds } from '../theory/scale';
 import { PitchClass } from '../theory/pitchClass';
 import { PitchClassPicker } from './PitchClassPicker';
 
-import './ScalePicker.css';
+import './App.css';
 import { useScale } from '../hooks';
 import { Dropdown } from './Dropdown';
 
@@ -23,7 +23,7 @@ export const ScalePicker: React.FC = () => {
 
   return (
     <div className='ScalePicker'>
-      key:
+      of
       <PitchClassPicker value={current.root} onChange={handleRootChange} />
       <Dropdown value={current.name} options={Object.keys(ScaleKinds)} onChange={handleKindChange} />
     </div>

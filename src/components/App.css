@@ -12,7 +12,23 @@
   display: flex;
 }
 
-.FretboardConfig {
+.PitchClassPicker {
+  display: flex;
+}
+
+.ScalePicker {
+  display: flex;
+}
+
+.ChordPicker {
+  display: flex;
+}
+
+.ModePicker {
+  display: flex;
+}
+
+.DisplayPicker {
   display: flex;
 }
 

@@ -6,21 +6,26 @@ import Soundfont from 'soundfont-player';
 
 import pc, { PitchClass } from '../theory/pitchClass';
 import note, { Note} from '../theory/note';
-
 import { getNotesInRange } from '../theory/interval';
-import { FretboardChart, Marker } from './FretboardChart';
+
+import { useStateWhileMounted, useTuning, useScale, useChord } from '../hooks';
 
 import { SyncContextWithRoute } from './SyncContextWithRoute';
 
+import { FretboardChart } from './FretboardChart';
+import { DisplayPicker } from './DisplayPicker';
+import { ModePicker } from './ModePicker';
 import { About } from './About';
 import { Footer } from './Footer';
 import { NoteList } from './NoteList';
 import { TuningPicker } from './TuningPicker';
 import { ChordPicker } from './ChordPicker';
 import { ScalePicker } from './ScalePicker';
+import { FretCountPicker } from './FretCountPicker';
+
+import { MarkerLabel, MarkerMode, Marker } from './types';
 
 import './App.css';
-import { useStateWhileMounted, useTuning, useScale, useChord } from '../hooks';
 
 const colors = {
    c1a: '#267257',
@@ -47,9 +52,6 @@ const colors = {
    c4d: '#803815',
    c4e: '#551C00',
 }
-
-type MarkerLabel = 'note' | 'degree';
-type MarkerMode = 'scale' | 'arpeggio';
 
 const RefactorMe: React.FC = () => {
   const [ fretCount, setFretCount ] = useState(12);
@@ -118,13 +120,11 @@ const RefactorMe: React.FC = () => {
             <div className="Main">
               <FretboardChart markers={markers} onMarkerClick={handleMarkerClick} tuning={tuning} fretCount={fretCount} width={200} height={600} />
               <div>
-                <div className="FretboardConfig">
-                  <TuningPicker value={tuning} onChange={setTuning} />
-                  <FretCountPicker value={fretCount} onChange={setFretCount} />
-                </div>
+                <TuningPicker value={tuning} onChange={setTuning} />
                 <ModePicker value={mode} onChange={setMode} />
                 {mode === 'scale' && <ScalePicker />}
-                {mode === 'arpeggio' && <ChordPicker />}
+                {mode === 'chord tones' && <ChordPicker />}
+                <FretCountPicker value={fretCount} onChange={setFretCount} />
                 <DisplayPicker value={display} onChange={setDisplay} mode={mode}/>
                 <NoteList notes={selected} onClick={tempSetLastPc} />
               </div>
@@ -135,53 +135,6 @@ const RefactorMe: React.FC = () => {
       </Switch>
     </div>
   );
-}
-
-const DisplayPicker: React.FC<{value: MarkerLabel, onChange: (display: MarkerLabel) => void, mode: MarkerMode}> = ({value, onChange, mode}) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.currentTarget.value as MarkerLabel);
-  }
-  return (
-    <div>
-      label:
-      <label>
-        <input type="radio" name="display" value='degree' checked={value === 'degree'} onChange={handleChange} />  
-        {mode === 'scale' ? 'scale degree' : 'chord tone'}
-      </label>
-      <label>
-        <input type="radio" name="display" value='note' checked={value === 'note'} onChange={handleChange} />
-        note name
-      </label>
-    </div>
-  )
-}
-
-const ModePicker: React.FC<{value: MarkerMode, onChange: (mode: MarkerMode) => void}> = ({value, onChange}) => {
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(e.currentTarget.value as MarkerMode);
-  }
-  return (
-    <div>
-      mode:
-      <label>
-        <input type="radio" name="mode" value='scale' checked={value === 'scale'} onChange={handleChange} />  
-        scale
-      </label>
-      <label>
-        <input type="radio" name="mode" value='arpeggio' checked={value === 'arpeggio'} onChange={handleChange} />
-        arpeggio
-      </label>
-    </div>
-  )
-}
-
-const FretCountPicker: React.FC<{value: number, onChange: (count: number) => void}> = ({value, onChange}) => {
-  const handleFretCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(parseInt(e.currentTarget.value, 10));
-  }
-  return <div>
-    <label>frets: <input type="number" min={3} max={15} value={value} onChange={handleFretCountChange} /></label>
-  </div>
 }
 
 const App = () => (

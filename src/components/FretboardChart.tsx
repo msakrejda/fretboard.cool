@@ -2,22 +2,15 @@ import React from 'react';
 
 import { scaleLength, fretPositions, stringPositions } from '../util';
 import { Tuning } from '../tuning';
-import { Note } from '../theory/note';
 import { Translate } from '../svg/Translate';
+
+import { Marker } from './types';
 
 import './FretboardChart.css';
 
 type SizeProps = {
   width: number;
   height: number;
-}
-
-export type Marker = {
-  string: number;
-  fret: number;
-  label: string;
-  note: Note;
-  fill: string;
 }
 
 export const FretboardChart: React.FunctionComponent<SizeProps & {
