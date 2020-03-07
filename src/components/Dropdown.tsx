@@ -14,14 +14,12 @@ export const Dropdown: React.FC<{
     return typeof o === "string" ? [ o, o ] : [ o.value, o.label ]
   })
   return (
-    <div>
-      <select value={value} onChange={handleChange}>
-        {valuesAndLabels.map(([ value, label]) => (
-          <option key={value} value={value}>
-            {label}
-          </option>
-        ))}
-      </select>
-    </div>
+    <select value={value} onChange={handleChange}>
+      {valuesAndLabels.map(([ value, label]) => (
+        <option key={value} value={value}>
+          {label}
+        </option>
+      ))}
+    </select>
   )
 }
