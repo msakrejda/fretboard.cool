@@ -1,3 +1,26 @@
+/* variables */
+
+:root {
+  --form-element-border: #6d432f;
+  --form-element-background: rgb(255, 244, 231);
+}
+
+/* general styling */
+
+input, select {
+  background-color: var(--form-element-background);
+  border-color: var(--form-element-border);
+  border-width: 1px;
+}
+
+/* controls */
+
+.Dropdown {
+  margin: 0px 3px;
+}
+
+/* components */
+
 .Content {
   max-width: 500px;
   justify-content: center;
@@ -6,10 +29,11 @@
 
 .Main {
   display: flex;
+  margin-top: 20px;
 }
 
-.TuningPicker {
-  display: flex;
+.ControlPanel > div:not(:first-child) {
+  margin-top: 10px;
 }
 
 .PitchClassPicker {
@@ -22,6 +46,15 @@
 
 .ChordPicker {
   display: flex;
+}
+
+.TuningPicker {
+  display: flex;
+}
+
+.FretCountPicker input {
+  width: 32px;
+  padding-left: 4px;
 }
 
 .ModePicker {

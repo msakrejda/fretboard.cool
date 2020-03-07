@@ -25,7 +25,7 @@ export const TuningPicker: React.FC<{value: Tuning, onChange: (newTuning: Tuning
  
   return (
     <div className="TuningPicker">
-      For
+      for
       <Dropdown value={instrument} options={instrumentOptions} onChange={handleInstrumentChange} />
       in
       <Dropdown value={tuningName} options={tuningOptions} onChange={setTuning} />

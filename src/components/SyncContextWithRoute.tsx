@@ -3,11 +3,12 @@ import React, { useCallback, useMemo } from 'react';
 import tun, { Tuning } from '../tuning';
 
 import { useRouteMatch, useHistory, Redirect, useLocation } from 'react-router-dom';
-import { Chord } from '../theory/chord';
+import c, { Chord } from '../theory/chord';
 import s, { Scale } from '../theory/scale';
 
-import { TuningContext, ScaleContext, ChordContext } from '../context';
+import { RouteContext } from '../context';
 import config from '../config';
+import { RouteContextValues } from './types';
 
 type ScaleRouteMatch = {
   tuning: string,
@@ -25,18 +26,12 @@ const isScaleRouteMatch = (match: ScaleRouteMatch | ChordRouteMatch | undefined)
   return match !== undefined && 'scale' in match;
 }
 
-type RouteContextValues = {
-  tuning: Tuning | undefined,
-  scale: Scale | undefined,
-  chord: Chord | undefined,
-}
-
 const decodeRoute = (match: ScaleRouteMatch | ChordRouteMatch | undefined): RouteContextValues => {
   if (!match) {
     return {
       tuning: undefined,
       scale: undefined,
-      chord: undefined
+      chord: undefined,
     }
   }
   const tuning = tun.urlDecode(match.tuning);
@@ -44,22 +39,24 @@ const decodeRoute = (match: ScaleRouteMatch | ChordRouteMatch | undefined): Rout
   if (isScaleRouteMatch(match)) {
     scale = s.urlDecode(match.pitchClass, match.scale)
   } else {
-    chord = s.urlDecode(match.pitchClass, match.chord)
+    chord = c.urlDecode(match.pitchClass, match.chord)
   }
 
   return {
     tuning,
     scale,
-    chord
+    chord,
   }
 }
 
 export const SyncContextWithRoute: React.FC = ({children}) => {
   const location = useLocation();
+  const history = useHistory();
+
   const scaleMatch = useRouteMatch<ScaleRouteMatch>("/:tuning/scales/:pitchClass/:scale");
   const chordMatch = useRouteMatch<ChordRouteMatch>("/:tuning/arpeggios/:pitchClass/:chord");
 
-  const { tuning, scale, chord } = useMemo(() => {
+  const context = useMemo(() => {
     return decodeRoute(scaleMatch?.params || chordMatch?.params)
     // Unfortunately, matches are not stable across renders, so we cannot use them for
     // deps. However, since the matches can only change when the location itself
@@ -67,46 +64,30 @@ export const SyncContextWithRoute: React.FC = ({children}) => {
     //
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ location.pathname ])
+  const { tuning, scale, chord } = context;
 
-  const history = useHistory();
-  const setTuning = useCallback((t: Tuning):void => {
-    if (scale) {
-      history.push(makeScaleUrl(t, scale));
-    } else if (chord) {
-      history.push(makeChordUrl(t, chord));
-    }
-  }, [ history, scale, chord ]);
-
-  const setScale = useCallback((s: Scale):void => {
-    if (!tuning) {
-      return;
-    }
-    const newRoute = makeScaleUrl(tuning, s);
-    history.push(newRoute)
-  }, [ history, tuning, ]);
-
-  const setChord = (c: Chord):void => {
-    if (!tuning) {
-      return;
-    }
-    const newRoute = makeChordUrl(tuning, c);
-    history.push(newRoute);
-  }
+  const updateRouteContext = useCallback((newContext: Partial<RouteContextValues>) => {
+    const merged = { ...context, ...newContext };
+    history.push(makeUrl(merged));
+  }, [ context, history ])
 
   const invalidRouteFallbackUrl = makeScaleUrl(config.defaultTuning, config.defaultScale)
   return (
-    <TuningContext.Provider value={[ tuning, setTuning ]}>
-      <ScaleContext.Provider value={[ scale, setScale ]}>
-        <ChordContext.Provider value={[ chord, setChord ]}>
-          {tuning && (scale || chord)
-            ? children
-            : <Redirect to={invalidRouteFallbackUrl} />}
-        </ChordContext.Provider>
-      </ScaleContext.Provider>
-    </TuningContext.Provider>
+    <RouteContext.Provider value={[ context, updateRouteContext ]}>
+      {tuning && (scale || chord)
+        ? children
+        : <Redirect to={invalidRouteFallbackUrl} />}
+    </RouteContext.Provider>
   )
 }
 
+const makeUrl = (context: RouteContextValues):string => {
+  if (context.scale) {
+    return makeScaleUrl(context.tuning, context.scale);
+  } else {
+    return makeChordUrl(context.tuning, context.chord);
+  }
+}
 
 const makeScaleUrl = (t: Tuning, scale: Scale):string => {
   const [ pitchClass, scaleKind ] = s.urlEncode(scale);

@@ -21,7 +21,9 @@ export const ChordPicker: React.FC = () => {
   }
 
   const handleRootChange = (newRoot: PitchClass):void => {
-    setCurrent(chord(current.name, newRoot, current.intervals))
+    if (current.intervals) {
+      setCurrent(chord(current.name, newRoot, current.intervals))
+    }
   }
 
   return (

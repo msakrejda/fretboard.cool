@@ -23,39 +23,12 @@ import { ChordPicker } from './ChordPicker';
 import { ScalePicker } from './ScalePicker';
 import { FretCountPicker } from './FretCountPicker';
 
-import { MarkerLabel, MarkerMode, Marker } from './types';
+import { MarkerLabel, Marker } from './types';
 
 import './App.css';
 
-const colors = {
-   c1a: '#267257',
-   c1b: '#72AB97',
-   c1c: '#478E75',
-   c1d: '#0E553C',
-   c1e: '#003925',
-
-   c2a: '#2A4D6E',
-   c2b: '#728CA6',
-   c2c: '#4A6B8A',
-   c2d: '#133353',
-   c2e: '#041E37',
-
-   c3a: '#AA7C39',
-   c3b: '#FFDCAA',
-   c3c: '#D4A96A',
-   c3d: '#805415',
-   c3e: '#553200',
-
-   c4a: '#AA5D39',
-   c4b: '#FFC6AA',
-   c4c: '#D48D6A',
-   c4d: '#803815',
-   c4e: '#551C00',
-}
-
 const RefactorMe: React.FC = () => {
   const [ fretCount, setFretCount ] = useState(12);
-  const [ mode, setMode ] = useState<MarkerMode>('scale');
   const [ display, setDisplay ] = useState<MarkerLabel>('note');
 
   const [ tuning, setTuning ] = useTuning()
@@ -96,8 +69,8 @@ const RefactorMe: React.FC = () => {
     }
   }, [ soundPlayer, pendingPlayback ]);
 
-  const selected = mode === 'scale' ? scale : chord;
-  const markers = tuning.notes.flatMap((n, i) => {
+  const selected = scale || chord;
+  const markers = selected ? tuning.notes.flatMap((n, i) => {
     const startVal = note.value(n);
     const notes = getNotesInRange(n, fretCount, selected);
     return notes.map(fretboardNote => ({
@@ -107,7 +80,7 @@ const RefactorMe: React.FC = () => {
       note: fretboardNote.note,
       fill: lastClickedPc && pc.equal(fretboardNote.note.pitchClass, lastClickedPc) ? 'gold' : 'white'
     }))
-  })
+  }) : [];
 
   return (
     <div className="Content">
@@ -119,14 +92,14 @@ const RefactorMe: React.FC = () => {
           <div>
             <div className="Main">
               <FretboardChart markers={markers} onMarkerClick={handleMarkerClick} tuning={tuning} fretCount={fretCount} width={200} height={600} />
-              <div>
+              <div className="ControlPanel">
+                <ModePicker />
+                {scale && <ScalePicker />}
+                {chord && <ChordPicker />}
                 <TuningPicker value={tuning} onChange={setTuning} />
-                <ModePicker value={mode} onChange={setMode} />
-                {mode === 'scale' && <ScalePicker />}
-                {mode === 'chord tones' && <ChordPicker />}
                 <FretCountPicker value={fretCount} onChange={setFretCount} />
-                <DisplayPicker value={display} onChange={setDisplay} mode={mode}/>
-                <NoteList notes={selected} onClick={tempSetLastPc} />
+                <DisplayPicker value={display} onChange={setDisplay} />
+                {selected && <NoteList notes={selected} onClick={tempSetLastPc} />}
               </div>
             </div>
             <Footer />

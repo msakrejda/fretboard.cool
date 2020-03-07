@@ -1,8 +1,7 @@
-import { useState, useContext, useEffect, useRef } from 'react'
+import { useState, useContext, useEffect, useRef, useCallback } from 'react'
 
 import { Tuning } from './tuning';
-import config from './config';
-import { TuningContext, ScaleContext, ChordContext } from './context';
+import { RouteContext } from './context';
 import { Scale } from './theory/scale';
 import { Chord } from './theory/chord';
 
@@ -23,34 +22,29 @@ export const useStateWhileMounted = <T>(initialValue: T): [ T, (newValue: T) => 
 
 /** generic hooks above, app-specific hooks below **/
 
-const noOp = () => {};
-
 export const useTuning = (): [ Tuning, (t: Tuning) => void ] => {
-  const val = useContext(TuningContext);
-  if (!val) {
-    return [ config.defaultTuning, noOp ];
-  }
+  const [ context, updateContext ] = useContext(RouteContext);
 
-  const [ tuning , setTuning ] = val;
-  return [ tuning || config.defaultTuning, setTuning ];
+  const setTuning = useCallback((tuning: Tuning): void => {
+    updateContext({ tuning })
+  }, [updateContext])
+  return [ context.tuning, setTuning ];
 }
 
 export const useScale = (): [ Scale, (t: Scale) => void ] => {
-  const val = useContext(ScaleContext);
-  if (!val) {
-    return [ config.defaultScale, noOp ];
-  }
+  const [ context, updateContext ] = useContext(RouteContext);
 
-  const [ scaleVal , setScale ] = val;
-  return [ scaleVal || config.defaultScale, setScale ];
+  const setScale = (scale: Scale): void => {
+    updateContext({ scale, chord: undefined })
+  }
+  return [ context.scale, setScale ];
 }
 
 export const useChord = (): [ Chord, (t: Chord) => void ] => {
-  const val = useContext(ChordContext);
-  if (!val) {
-    return [ config.defaultChord, noOp ];
-  }
+  const [ context, updateContext ] = useContext(RouteContext);
 
-  const [ chordVal , setChord ] = val;
-  return [ chordVal || config.defaultChord, setChord ];
+  const setChord = (chord: Chord): void => {
+    updateContext({ chord, scale: undefined })
+  }
+  return [ context.chord, setChord ];
 }

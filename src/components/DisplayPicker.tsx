@@ -1,9 +1,12 @@
 import React from 'react';
 
-import { MarkerLabel, MarkerMode } from './types';
+import { MarkerLabel } from './types';
 import { Dropdown } from './Dropdown';
+import { useScale } from '../hooks';
 
-export const DisplayPicker: React.FC<{value: MarkerLabel, onChange: (display: MarkerLabel) => void, mode: MarkerMode}> = ({value, onChange, mode}) => {
+export const DisplayPicker: React.FC<{value: MarkerLabel, onChange: (display: MarkerLabel) => void}> = ({value, onChange}) => {
+  const [ scale ] = useScale();
+
   const handleChange = (newMode: string) => {
     onChange(newMode as MarkerLabel);
   }
@@ -11,7 +14,7 @@ export const DisplayPicker: React.FC<{value: MarkerLabel, onChange: (display: Ma
     <div className="DisplayPicker">
       label with
       <Dropdown value={value} options={[
-        { value: 'degree', label: mode === 'scale' ? 'scale degree' : 'chord tone'},
+        { value: 'degree', label: scale ? 'scale degree' : 'chord tone'},
         { value: 'note', label: 'note name' }
       ]} onChange={handleChange} />
     </div>
