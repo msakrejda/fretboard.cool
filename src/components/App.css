@@ -8,6 +8,14 @@
   display: flex;
 }
 
+.TuningPicker {
+  display: flex;
+}
+
+.FretboardConfig {
+  display: flex;
+}
+
 .Footer {
   text-align: center;
   width: 100%;

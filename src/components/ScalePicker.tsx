@@ -1,11 +1,11 @@
 import React from 'react';
 
 import { scale, ScaleKind, ScaleKinds } from '../theory/scale';
-import { useScale } from './SyncContextWithRoute';
 import { PitchClass } from '../theory/pitchClass';
 import { PitchClassPicker } from './PitchClassPicker';
 
 import './ScalePicker.css';
+import { useScale } from '../hooks';
 
 export const ScalePicker: React.FC = () => {
   const [ current, setCurrent ] = useScale();

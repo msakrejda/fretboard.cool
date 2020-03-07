@@ -3,8 +3,8 @@ import React from 'react';
 import { ChordKind, ChordKinds, chord } from '../theory/chord';
 
 import { PitchClassPicker } from './PitchClassPicker';
-import { useChord } from './SyncContextWithRoute';
 import { PitchClass } from '../theory/pitchClass';
+import { useChord } from '../hooks';
 
 import './ChordPicker.css';
 

@@ -1,36 +1,33 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+
+import { Dropdown } from './Dropdown';
 
 import { Tuning, Tunings } from '../tuning';
 
 export const TuningPicker: React.FC<{value: Tuning, onChange: (newTuning: Tuning) => void}> = ({value, onChange}) => {
-  const options = Tunings.map(tuning => {
-    const value = [ tuning.instrument, tuning.name ].join(',');
-    return (
-      tuning.name === 'standard'
-      ? <option key={value} value={value}>
-          {tuning.instrument}
-        </option>
-      : <option key={value} value={value}>
-          &nbsp;&nbsp;{tuning.name}
-        </option>
-    )
-  })
-
-  const handleChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const [ instrument, name ] = e.currentTarget.value.split(',')
-    const newTuning = Tunings.find(t => t.instrument === instrument && t.name === name);
+  const [ instrument, setInstrument ] = useState(value.instrument)
+  const [ tuningName, setTuning ] = useState(value.name)
+  useEffect(() => {
+    console.log('setting tuning', instrument, tuningName)
+    const instrumentTuning = Tunings.find(t => t.instrument === instrument && t.name === tuningName);
+    if (instrumentTuning) {
+      onChange(instrumentTuning)
+    }
+  }, [ instrument, tuningName, onChange ])
+  const handleInstrumentChange = (newInstrument: string):void => {
+    const newTuning = Tunings.find(t => t.instrument === instrument);
     if (newTuning) {
-      onChange(newTuning);
+      setInstrument(newInstrument);
+      setTuning(newTuning.name);
     }
   }
-
-  const val = [ value.instrument, value.name ].join(',');
+  const instrumentOptions = Array.from(new Set(Tunings.map(t => t.instrument)))
+  const tuningOptions = Tunings.filter(t => t.instrument === instrument).map(t => t.name);
+ 
   return (
-    <div>
-      tuning:
-      <select value={val} onChange={handleChange}>
-        {options}
-      </select>
+    <div className="TuningPicker">
+      <Dropdown value={instrument} options={instrumentOptions} onChange={handleInstrumentChange} />
+      <Dropdown value={tuningName} options={tuningOptions} onChange={setTuning} />
     </div>
   )
 }

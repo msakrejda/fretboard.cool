@@ -30,7 +30,11 @@ export const NoteList: React.FC<{notes: PitchClassSequence, onClick: (pc: PitchC
             </Translate>
           }
 
-          return <li><svg width={width} height={height}><ListMarker label={label} /></svg> {i === 0 ? 'root' : interval.format(int)}</li>
+          return (
+            <li key={label}>
+              <svg width={width} height={height}><ListMarker label={label} /></svg> {i === 0 ? 'root' : interval.format(int)}
+            </li>
+          )
         })}
       </ol>
     </div>

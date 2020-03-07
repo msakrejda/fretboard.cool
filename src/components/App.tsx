@@ -9,7 +9,8 @@ import note, { Note} from '../theory/note';
 
 import { getNotesInRange } from '../theory/interval';
 import { FretboardChart, Marker } from './FretboardChart';
-import { SyncContextWithRoute, useTuning, useScale, useChord } from './SyncContextWithRoute';
+
+import { SyncContextWithRoute } from './SyncContextWithRoute';
 
 import { About } from './About';
 import { Footer } from './Footer';
@@ -19,7 +20,7 @@ import { ChordPicker } from './ChordPicker';
 import { ScalePicker } from './ScalePicker';
 
 import './App.css';
-import { useStateWhileMounted } from '../hooks';
+import { useStateWhileMounted, useTuning, useScale, useChord } from '../hooks';
 
 const colors = {
    c1a: '#267257',
@@ -117,12 +118,14 @@ const RefactorMe: React.FC = () => {
             <div className="Main">
               <FretboardChart markers={markers} onMarkerClick={handleMarkerClick} tuning={tuning} fretCount={fretCount} width={200} height={600} />
               <div>
-                <FretCountSelector value={fretCount} onChange={setFretCount} />
-                <TuningPicker value={tuning} onChange={setTuning} />
-                <ModeSelector value={mode} onChange={setMode} />
+                <div className="FretboardConfig">
+                  <TuningPicker value={tuning} onChange={setTuning} />
+                  <FretCountPicker value={fretCount} onChange={setFretCount} />
+                </div>
+                <ModePicker value={mode} onChange={setMode} />
                 {mode === 'scale' && <ScalePicker />}
                 {mode === 'arpeggio' && <ChordPicker />}
-                <DisplaySelector value={display} onChange={setDisplay} mode={mode}/>
+                <DisplayPicker value={display} onChange={setDisplay} mode={mode}/>
                 <NoteList notes={selected} onClick={tempSetLastPc} />
               </div>
             </div>
@@ -134,7 +137,7 @@ const RefactorMe: React.FC = () => {
   );
 }
 
-const DisplaySelector: React.FC<{value: MarkerLabel, onChange: (display: MarkerLabel) => void, mode: MarkerMode}> = ({value, onChange, mode}) => {
+const DisplayPicker: React.FC<{value: MarkerLabel, onChange: (display: MarkerLabel) => void, mode: MarkerMode}> = ({value, onChange, mode}) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.currentTarget.value as MarkerLabel);
   }
@@ -153,7 +156,7 @@ const DisplaySelector: React.FC<{value: MarkerLabel, onChange: (display: MarkerL
   )
 }
 
-const ModeSelector: React.FC<{value: MarkerMode, onChange: (mode: MarkerMode) => void}> = ({value, onChange}) => {
+const ModePicker: React.FC<{value: MarkerMode, onChange: (mode: MarkerMode) => void}> = ({value, onChange}) => {
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.currentTarget.value as MarkerMode);
   }
@@ -172,7 +175,7 @@ const ModeSelector: React.FC<{value: MarkerMode, onChange: (mode: MarkerMode) =>
   )
 }
 
-const FretCountSelector: React.FC<{value: number, onChange: (count: number) => void}> = ({value, onChange}) => {
+const FretCountPicker: React.FC<{value: number, onChange: (count: number) => void}> = ({value, onChange}) => {
   const handleFretCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(parseInt(e.currentTarget.value, 10));
   }

@@ -28,7 +28,10 @@ const urlEncode = (t: Tuning): string => {
   return encodeURIComponent(t.instrument + ':' + t.name)
 }
 
-const urlDecode = (tStr: string): Tuning | undefined => {
+const urlDecode = (tStr: string | undefined): Tuning | undefined => {
+  if (tStr === undefined) {
+    return undefined;
+  }
   const decoded = decodeURIComponent(tStr);
   const [ instrument, name ] = decoded.split(':');
   return Tunings.find(t => t.instrument === instrument && t.name === name)
