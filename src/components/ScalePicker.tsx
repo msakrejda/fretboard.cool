@@ -6,16 +6,13 @@ import { PitchClassPicker } from './PitchClassPicker';
 
 import './ScalePicker.css';
 import { useScale } from '../hooks';
+import { Dropdown } from './Dropdown';
 
 export const ScalePicker: React.FC = () => {
   const [ current, setCurrent ] = useScale();
 
-  const options = Object.keys(ScaleKinds).map(scale => {
-    return <option key={scale} value={scale}>{scale}</option>
-  })
-
-  const handleKindChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newKind = e.currentTarget.value as ScaleKind;
+  const handleKindChange = (kind: string) => {
+    const newKind = kind as ScaleKind;
     const intervals = ScaleKinds[newKind];
     setCurrent(scale(newKind, current.root, intervals));
   }
@@ -28,11 +25,7 @@ export const ScalePicker: React.FC = () => {
     <div className='ScalePicker'>
       key:
       <PitchClassPicker value={current.root} onChange={handleRootChange} />
-      <select value={current.name} onChange={handleKindChange}>
-        {options}
-      </select>
+      <Dropdown value={current.name} options={Object.keys(ScaleKinds)} onChange={handleKindChange} />
     </div>
   )
 }
-
-

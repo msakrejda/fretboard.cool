@@ -7,16 +7,13 @@ import { PitchClass } from '../theory/pitchClass';
 import { useChord } from '../hooks';
 
 import './ChordPicker.css';
+import { Dropdown } from './Dropdown';
 
 export const ChordPicker: React.FC = () => {
   const [ current, setCurrent ] = useChord();
 
-  const options = Object.keys(ChordKinds).map(chord => {
-    return <option key={chord} value={chord}>{chord}</option>
-  })
-
-  const handleKindChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newKind = e.currentTarget.value as ChordKind;
+  const handleKindChange = (name: string) => {
+    const newKind = name as ChordKind;
     const intervals = ChordKinds[newKind];
     setCurrent(chord(newKind, current.root, intervals));
   }
@@ -29,9 +26,7 @@ export const ChordPicker: React.FC = () => {
     <div className="ChordPicker">
       root:
       <PitchClassPicker value={current.root} onChange={handleRootChange} />
-      <select value={current.name} onChange={handleKindChange}>
-        {options}
-      </select>
+      <Dropdown value={current.name} options={Object.keys(ChordKinds)} onChange={handleKindChange} />
     </div>
   )
 }
