@@ -5,6 +5,7 @@ before shipping:
 * vendor soundfont
 * animate transitions
 * lint
+* restore previous scale / chord when changing mode back
 
 later:
 * key-oriented navigation (pick key, then easily switch I / II / IV / V / etc.)
