@@ -86,6 +86,8 @@ return (
     <TuningPicker value={tuning} onChange={setTuning} />
     <FretCountPicker value={fretCount} onChange={setFretCount} />
     <DisplayPicker value={display} onChange={setDisplay} />
+    <hr />
+    {scale ? 'scale degrees' : 'chord tones'}
     {selected && <NoteList notes={selected} onClick={tempSetLastPc} />}
   </div>
 </div>
