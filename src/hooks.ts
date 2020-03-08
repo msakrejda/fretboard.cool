@@ -1,7 +1,7 @@
 import { useState, useContext, useEffect, useRef, useCallback } from 'react'
 
 import { Tuning } from './tuning';
-import { RouteContext } from './context';
+import { AppContext } from './context';
 import { Scale } from './theory/scale';
 import { Chord } from './theory/chord';
 
@@ -23,7 +23,7 @@ export const useStateWhileMounted = <T>(initialValue: T): [ T, (newValue: T) => 
 /** generic hooks above, app-specific hooks below **/
 
 export const useTuning = (): [ Tuning, (t: Tuning) => void ] => {
-  const [ context, updateContext ] = useContext(RouteContext);
+  const [ context, updateContext ] = useContext(AppContext);
 
   const setTuning = useCallback((tuning: Tuning): void => {
     updateContext({ tuning })
@@ -31,20 +31,20 @@ export const useTuning = (): [ Tuning, (t: Tuning) => void ] => {
   return [ context.tuning, setTuning ];
 }
 
-export const useScale = (): [ Scale, (t: Scale) => void ] => {
-  const [ context, updateContext ] = useContext(RouteContext);
+export const useScale = (): [ Scale, (t: Scale) => void, Scale | undefined ] => {
+  const [ context, updateContext ] = useContext(AppContext);
 
   const setScale = (scale: Scale): void => {
     updateContext({ scale, chord: undefined })
   }
-  return [ context.scale, setScale ];
+  return [ context.scale, setScale, context.prevScale ];
 }
 
-export const useChord = (): [ Chord, (t: Chord) => void ] => {
-  const [ context, updateContext ] = useContext(RouteContext);
+export const useChord = (): [ Chord, (t: Chord) => void, Chord | undefined ] => {
+  const [ context, updateContext ] = useContext(AppContext);
 
   const setChord = (chord: Chord): void => {
     updateContext({ chord, scale: undefined })
   }
-  return [ context.chord, setChord ];
+  return [ context.chord, setChord, context.prevChord ];
 }

@@ -6,6 +6,13 @@ export type RouteContextValues = {
   chord: Chord | undefined,
 };
 
+export type AppContextValues = RouteContextValues & {
+  prevScale: Scale | undefined,
+  prevChord: Chord | undefined,
+}
+
+export type AppContextParams = Partial<Omit<AppContextValues, 'preChord' | 'prevScale'>>;
+
 export type Marker = {
   string: number;
   fret: number;

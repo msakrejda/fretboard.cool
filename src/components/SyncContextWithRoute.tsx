@@ -1,4 +1,4 @@
-import React, { useCallback, useMemo } from 'react';
+import React, { useCallback, useMemo, useState, useEffect } from 'react';
 
 import tun, { Tuning } from '../tuning';
 
@@ -6,9 +6,9 @@ import { useRouteMatch, useHistory, Redirect, useLocation } from 'react-router-d
 import c, { Chord } from '../theory/chord';
 import s, { Scale } from '../theory/scale';
 
-import { RouteContext } from '../context';
+import { AppContext } from '../context';
 import config from '../config';
-import { RouteContextValues } from './types';
+import { RouteContextValues, AppContextParams, AppContextValues } from './types';
 
 type ScaleRouteMatch = {
   tuning: string,
@@ -56,7 +56,7 @@ export const SyncContextWithRoute: React.FC = ({children}) => {
   const scaleMatch = useRouteMatch<ScaleRouteMatch>("/:tuning/scales/:pitchClass/:scale");
   const chordMatch = useRouteMatch<ChordRouteMatch>("/:tuning/arpeggios/:pitchClass/:chord");
 
-  const context = useMemo(() => {
+  const routeContext = useMemo(() => {
     return decodeRoute(scaleMatch?.params || chordMatch?.params)
     // Unfortunately, matches are not stable across renders, so we cannot use them for
     // deps. However, since the matches can only change when the location itself
@@ -64,20 +64,35 @@ export const SyncContextWithRoute: React.FC = ({children}) => {
     //
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ location.pathname ])
-  const { tuning, scale, chord } = context;
+  const [ context, setContext ] = useState<AppContextValues>({
+    ...routeContext,
+    prevChord: undefined,
+    prevScale: undefined
+  });
+  useEffect(() => {
+    setContext(c => ({
+      ...routeContext,
+      prevChord: c?.chord || c?.prevChord,
+      prevScale: c?.scale || c?.prevScale,
+    }));
+  }, [ routeContext ]);
+  const { tuning, scale, chord } = routeContext;
 
-  const updateRouteContext = useCallback((newContext: Partial<RouteContextValues>) => {
-    const merged = { ...context, ...newContext };
+  const updateRouteContext = useCallback((newContext: AppContextParams) => {
+    const merged = {
+      ...routeContext,
+      ...newContext,
+    };
     history.push(makeUrl(merged));
-  }, [ context, history ])
+  }, [ routeContext, history ])
 
   const invalidRouteFallbackUrl = makeScaleUrl(config.defaultTuning, config.defaultScale)
   return (
-    <RouteContext.Provider value={[ context, updateRouteContext ]}>
+    <AppContext.Provider value={[ context, updateRouteContext ]}>
       {tuning && (scale || chord)
         ? children
         : <Redirect to={invalidRouteFallbackUrl} />}
-    </RouteContext.Provider>
+    </AppContext.Provider>
   )
 }
 

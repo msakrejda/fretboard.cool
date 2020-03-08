@@ -5,13 +5,13 @@ import { useScale, useChord } from '../hooks';
 import config from '../config';
 
 export const ModePicker: React.FC = () => {
-  const [ scale, setScale] = useScale();
-  const [ , setChord] = useChord();
+  const [ scale, setScale, previousScale ] = useScale();
+  const [ , setChord, previousChord ] = useChord();
   const handleChange = (newMode: string) => {
     if (newMode === 'scale') {
-      setScale(config.defaultScale);
+      setScale(previousScale || config.defaultScale);
     } else {
-      setChord(config.defaultChord);
+      setChord(previousChord || config.defaultChord);
     }
   }
   return (
