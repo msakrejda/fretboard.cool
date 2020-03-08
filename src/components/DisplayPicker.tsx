@@ -12,8 +12,7 @@ export const DisplayPicker: React.FC<{value: MarkerLabel, onChange: (display: Ma
   }
   return (
     <div className="DisplayPicker">
-      label with
-      <Dropdown value={value} options={[
+      <Dropdown label='label' value={value} options={[
         { value: 'degree', label: scale ? 'scale degree' : 'chord tone'},
         { value: 'note', label: 'note name' }
       ]} onChange={handleChange} />

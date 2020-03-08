@@ -22,10 +22,12 @@ export const ScalePicker: React.FC = () => {
   }
 
   return (
-    <div className='ScalePicker'>
-      of
-      <PitchClassPicker value={current.root} onChange={handleRootChange} />
-      <Dropdown value={current.name} options={Object.keys(ScaleKinds)} onChange={handleKindChange} />
+    <div>
+      <span className="FormLabel">scale</span>
+      <div className='ScalePicker'>
+        <PitchClassPicker value={current.root} onChange={handleRootChange} />
+        <Dropdown value={current.name} options={Object.keys(ScaleKinds)} onChange={handleKindChange} />
+      </div>
     </div>
   )
 }

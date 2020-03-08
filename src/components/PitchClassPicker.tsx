@@ -17,7 +17,6 @@ export const PitchClassPicker: React.FC<{value: PitchClass, onChange: (pitchClas
 
   const handleAccidentalChange = (accidental: string) => {
     const newAccidental = parseInt(accidental, 10) as Accidental;
-    console.log('accidental changed to', accidental);
     onChange(pc.pc(value.letter, newAccidental));
   }
   

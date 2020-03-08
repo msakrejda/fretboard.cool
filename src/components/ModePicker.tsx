@@ -15,9 +15,6 @@ export const ModePicker: React.FC = () => {
     }
   }
   return (
-    <div className='ModePicker'>
-      Show the 
-      <Dropdown value={scale ? 'scale' : 'chord tones'} options={[ 'scale', 'chord tones' ]} onChange={handleChange} />
-    </div>
+    <Dropdown label='show' value={scale ? 'scale' : 'chord tones'} options={[ 'scale', 'chord tones' ]} onChange={handleChange} />
   )
 }

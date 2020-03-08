@@ -15,8 +15,14 @@ input, select {
 
 /* controls */
 
-.Dropdown {
-  margin: 0px 3px;
+.Dropdown select {
+  display: block;
+}
+
+.FormLabel {
+  font-size: smaller;
+  font-weight: 500;
+  color: #09000a;
 }
 
 /* components */
@@ -44,21 +50,18 @@ input, select {
   display: flex;
 }
 
-.ChordPicker {
-  display: flex;
+.ScalePicker .Dropdown:not(:first-child) select {
+  border-left: 12px;
 }
 
-.TuningPicker {
+.ChordPicker {
   display: flex;
 }
 
 .FretCountPicker input {
   width: 32px;
   padding-left: 4px;
-}
-
-.ModePicker {
-  display: flex;
+  display: block;
 }
 
 .DisplayPicker {

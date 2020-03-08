@@ -27,10 +27,12 @@ export const ChordPicker: React.FC = () => {
   }
 
   return (
-    <div className="ChordPicker">
-      of
-      <PitchClassPicker value={current.root} onChange={handleRootChange} />
-      <Dropdown value={current.name} options={Object.keys(ChordKinds)} onChange={handleKindChange} />
+    <div>
+      <span className="FormLabel">chord</span>
+      <div className="ChordPicker">
+        <PitchClassPicker value={current.root} onChange={handleRootChange} />
+        <Dropdown value={current.name} options={Object.keys(ChordKinds)} onChange={handleKindChange} />
+      </div>
     </div>
   )
 }
