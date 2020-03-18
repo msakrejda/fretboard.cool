@@ -5,7 +5,7 @@ export enum NoteLetter {
   F = 'F',
   G = 'G',
   A = 'A',
-  B = 'B'
+  B = 'B',
 }
 
 export const NoteLetters = [
@@ -15,10 +15,10 @@ export const NoteLetters = [
   NoteLetter.F,
   NoteLetter.G,
   NoteLetter.A,
-  NoteLetter.B
+  NoteLetter.B,
 ]
 
 export const nextLetterSemitones = (letter: NoteLetter): number => {
-  const letterSemitones = [ 0, 2, 4, 5, 7, 9, 11 ];
-  return letterSemitones[NoteLetters.indexOf(letter)];
+  const letterSemitones = [0, 2, 4, 5, 7, 9, 11]
+  return letterSemitones[NoteLetters.indexOf(letter)]
 }

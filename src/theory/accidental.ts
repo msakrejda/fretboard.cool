@@ -3,7 +3,7 @@ export enum Accidental {
   Flat = -1,
   Natural = 0,
   Sharp = 1,
-  DoubleSharp = 2
+  DoubleSharp = 2,
 }
 
 export const Accidentals = [
@@ -27,16 +27,19 @@ const unicodeMapping = {
   [Accidental.DoubleSharp]: '𝄪',
 }
 
-const format = (value: Accidental, ascii: boolean = false):string => {
-  return (ascii ? asciiMapping : unicodeMapping)[value];
+const format = (value: Accidental, ascii: boolean = false): string => {
+  return (ascii ? asciiMapping : unicodeMapping)[value]
 }
 
-const adjust = (accidental: Accidental, semitones: number): Accidental | undefined => {
-  const newAccidental = accidental + semitones;
-  return newAccidental in Accidental ? newAccidental : undefined;
+const adjust = (
+  accidental: Accidental,
+  semitones: number
+): Accidental | undefined => {
+  const newAccidental = accidental + semitones
+  return newAccidental in Accidental ? newAccidental : undefined
 }
 
 export default {
   adjust,
-  format
+  format,
 }

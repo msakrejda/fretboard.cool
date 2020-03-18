@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom'
 
 export const Footer: React.FC = () => {
   return (
-    <div className="Footer">
+    <div className='Footer'>
       <Link to='/about'>about</Link>
     </div>
   )

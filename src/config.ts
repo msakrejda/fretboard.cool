@@ -1,15 +1,15 @@
-import { Tunings, Tuning } from "./tuning";
-import { scale, ScaleKinds, Scale } from "./theory/scale";
-import { chord, ChordKinds, Chord } from "./theory/chord";
-import { pc } from "./theory/pitchClass";
-import { NoteLetter } from "./theory/letter";
-import { MarkerMode } from "./components/types";
+import { Tunings, Tuning } from './tuning'
+import { scale, ScaleKinds, Scale } from './theory/scale'
+import { chord, ChordKinds, Chord } from './theory/chord'
+import { pc } from './theory/pitchClass'
+import { NoteLetter } from './theory/letter'
+import { MarkerMode } from './components/types'
 
 type Config = {
-  defaultTuning: Tuning,
-  defaultScale: Scale,
-  defaultChord: Chord,
-  defaultMarkerMode: MarkerMode,
+  defaultTuning: Tuning
+  defaultScale: Scale
+  defaultChord: Chord
+  defaultMarkerMode: MarkerMode
 }
 
 const config: Config = {
@@ -19,4 +19,4 @@ const config: Config = {
   defaultMarkerMode: 'scale',
 }
 
-export default config;
+export default config

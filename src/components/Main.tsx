@@ -1,41 +1,47 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react'
 
-import Soundfont, { InstrumentName } from 'soundfont-player';
+import Soundfont, { InstrumentName } from 'soundfont-player'
 
-import { MarkerLabel, Marker } from './types';
-import pc, { PitchClass } from '../theory/pitchClass';
-import note, { Note} from '../theory/note';
-import { getNotesInRange } from '../theory/interval';
+import { MarkerLabel, Marker } from './types'
+import pc, { PitchClass } from '../theory/pitchClass'
+import note, { Note } from '../theory/note'
+import { getNotesInRange } from '../theory/interval'
 
-import { useStateWhileMounted, useTuning, useScale, useChord } from '../hooks';
+import { useStateWhileMounted, useTuning, useScale, useChord } from '../hooks'
 
-import { FretboardChart } from './FretboardChart';
-import { DisplayPicker } from './DisplayPicker';
-import { ModePicker } from './ModePicker';
-import { Footer } from './Footer';
-import { NoteList } from './NoteList';
-import { TuningPicker } from './TuningPicker';
-import { ChordPicker } from './ChordPicker';
-import { ScalePicker } from './ScalePicker';
-import { FretCountPicker } from './FretCountPicker';
+import { FretboardChart } from './FretboardChart'
+import { DisplayPicker } from './DisplayPicker'
+import { ModePicker } from './ModePicker'
+import { Footer } from './Footer'
+import { NoteList } from './NoteList'
+import { TuningPicker } from './TuningPicker'
+import { ChordPicker } from './ChordPicker'
+import { ScalePicker } from './ScalePicker'
+import { FretCountPicker } from './FretCountPicker'
 
-import './App.css';
+import './App.css'
 
 export const Main: React.FC = () => {
   // N.B.: this only applies on first load, not resizing, but that's fine:
   // users can adjust as necessary
-  const defaultFretCount = window.matchMedia('(max-height: 600px)').matches ? 7 : 12;
-  const [ fretCount, setFretCount ] = useState(defaultFretCount);
-  const [ display, setDisplay ] = useState<MarkerLabel>('note');
+  const defaultFretCount = window.matchMedia('(max-height: 600px)').matches
+    ? 7
+    : 12
+  const [fretCount, setFretCount] = useState(defaultFretCount)
+  const [display, setDisplay] = useState<MarkerLabel>('note')
 
-  const [ tuning, setTuning ] = useTuning()
-  const [ scale ] = useScale()
-  const [ chord ] = useChord()
-  
-  const [ pendingPlayback, setPendingPlayback ] = useState<Note | undefined>();
-  const [ soundPlayer, setSoundPlayer ] = useStateWhileMounted<Soundfont.Player | undefined>(undefined);
+  const [tuning, setTuning] = useTuning()
+  const [scale] = useScale()
+  const [chord] = useChord()
 
-  const [ lastClickedPc, setLastClickedPc ] = useStateWhileMounted<PitchClass | undefined>(undefined)
+  const [pendingPlayback, setPendingPlayback] = useState<Note | undefined>()
+  const [soundPlayer, setSoundPlayer] = useStateWhileMounted<
+    Soundfont.Player | undefined
+  >(undefined)
+
+  const [lastClickedPc, setLastClickedPc] = useStateWhileMounted<
+    PitchClass | undefined
+  >(undefined)
   const tempSetLastPc = (pc: PitchClass): void => {
     setLastClickedPc(pc)
     setTimeout(() => setLastClickedPc(undefined), 3000)
@@ -45,45 +51,61 @@ export const Main: React.FC = () => {
     tempSetLastPc(marker.note.pitchClass)
 
     if (!soundPlayer) {
-      setPendingPlayback(marker.note);
-      const ac = new AudioContext();
-      Soundfont.instrument(ac, process.env.PUBLIC_URL + '/fluid-r3-acoustic_guitar_steel-mp3.js' as InstrumentName).then(guitar => {
+      setPendingPlayback(marker.note)
+      const ac = new AudioContext()
+      const instrumentPath = (process.env.PUBLIC_URL +
+        '/fluid-r3-acoustic_guitar_steel-mp3.js') as InstrumentName
+      Soundfont.instrument(ac, instrumentPath).then((guitar) => {
         setSoundPlayer(guitar)
       })
-      return;
+      return
     }
 
-    const noteLabel = note.format(marker.note, true);
-    soundPlayer.play(noteLabel);
+    const noteLabel = note.format(marker.note, true)
+    soundPlayer.play(noteLabel)
   }
 
   useEffect(() => {
     if (soundPlayer && pendingPlayback) {
-      const noteLabel = note.format(pendingPlayback, true);
-      soundPlayer.stop();
-      soundPlayer.play(noteLabel);
-      setPendingPlayback(undefined);
+      const noteLabel = note.format(pendingPlayback, true)
+      soundPlayer.stop()
+      soundPlayer.play(noteLabel)
+      setPendingPlayback(undefined)
     }
-  }, [ soundPlayer, pendingPlayback ]);
+  }, [soundPlayer, pendingPlayback])
 
-  const selected = scale || chord;
-  const markers = selected ? tuning.notes.flatMap((n, i) => {
-    const startVal = note.value(n);
-    const notes = getNotesInRange(n, fretCount, selected);
-    return notes.map(fretboardNote => ({
-      string: i,
-      fret: note.value(fretboardNote.note) - startVal,
-      label: display === 'degree' ? String(fretboardNote.index) : pc.format(fretboardNote.note.pitchClass),
-      note: fretboardNote.note,
-      fill: lastClickedPc && pc.equal(fretboardNote.note.pitchClass, lastClickedPc) ? 'gold' : 'white'
-    }))
-  }) : [];
+  const selected = scale || chord
+  const markers = selected
+    ? tuning.notes.flatMap((n, i) => {
+        const startVal = note.value(n)
+        const notes = getNotesInRange(n, fretCount, selected)
+        return notes.map((fretboardNote) => ({
+          string: i,
+          fret: note.value(fretboardNote.note) - startVal,
+          label:
+            display === 'degree'
+              ? String(fretboardNote.index)
+              : pc.format(fretboardNote.note.pitchClass),
+          note: fretboardNote.note,
+          fill:
+            lastClickedPc &&
+            pc.equal(fretboardNote.note.pitchClass, lastClickedPc)
+              ? 'gold'
+              : 'white',
+        }))
+      })
+    : []
 
   return (
     <>
-      <div className="Main">
-        <FretboardChart markers={markers} onMarkerClick={handleMarkerClick} tuning={tuning} fretCount={fretCount} />
-        <div className="ControlPanel">
+      <div className='Main'>
+        <FretboardChart
+          markers={markers}
+          onMarkerClick={handleMarkerClick}
+          tuning={tuning}
+          fretCount={fretCount}
+        />
+        <div className='ControlPanel'>
           <ModePicker />
           {scale && <ScalePicker />}
           {chord && <ChordPicker />}

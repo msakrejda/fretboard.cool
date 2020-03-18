@@ -1,15 +1,15 @@
-import React from 'react';
+import React from 'react'
 
 import { BrowserRouter as Router, Route, Switch } from 'react-router-dom'
-import { SyncContextWithRoute } from './SyncContextWithRoute';
-import { About } from './About';
-import { Main } from './Main';
+import { SyncContextWithRoute } from './SyncContextWithRoute'
+import { About } from './About'
+import { Main } from './Main'
 
-import './App.css';
+import './App.css'
 
 const App = () => (
   <Router>
-    <div className="Content">
+    <div className='Content'>
       <Switch>
         <Route path='/about'>
           <About />
@@ -24,4 +24,4 @@ const App = () => (
   </Router>
 )
 
-export default App;
+export default App
