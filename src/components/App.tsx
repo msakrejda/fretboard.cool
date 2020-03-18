@@ -15,8 +15,8 @@ const App = () => (
           <About />
         </Route>
         <Route path='*'>
-        <SyncContextWithRoute>
-          <Main />
+          <SyncContextWithRoute>
+            <Main />
           </SyncContextWithRoute>
         </Route>
       </Switch>
