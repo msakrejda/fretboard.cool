@@ -1,4 +1,4 @@
-import { useState, useContext, useEffect, useRef, useCallback } from 'react'
+import { useState, useContext, useEffect, useRef, useCallback, useLayoutEffect } from 'react'
 
 import { Tuning } from './tuning';
 import { AppContext } from './context';
@@ -18,6 +18,49 @@ export const useStateWhileMounted = <T>(initialValue: T): [ T, (newValue: T) => 
     setVal(newVal)
   }
   return [ val, setWhileMounted ]
+}
+
+export type Dimensions = {
+  width: number;
+  height: number;
+}
+
+export function useDimensions<T extends HTMLElement>(): [
+  React.Ref<T>,
+  Dimensions | undefined
+] {
+  const resizeTimeoutMillis = 100;
+  const ref = useRef<T>(null);
+  const [ dimensions, setDimensions ] = useState<Dimensions | undefined>(undefined);
+
+  useLayoutEffect(() => {
+    let lastResize: number | undefined;
+    const handleResize = () => {
+      if (lastResize) {
+        window.clearTimeout(lastResize);
+      }
+      lastResize = window.setTimeout(() => {
+        const currElem = ref.current;
+        if (!currElem) {
+          return;
+        }
+        const { width, height } = currElem.getBoundingClientRect();
+        setDimensions({ width, height });
+        lastResize = undefined;
+      }, resizeTimeoutMillis);
+    };
+    handleResize();
+
+    window.addEventListener("resize", handleResize);
+
+    return () => {
+      window.removeEventListener("resize", handleResize);
+      if (lastResize) {
+        window.clearTimeout(lastResize);
+      }
+    };
+  }, []);
+  return [ref, dimensions];
 }
 
 /** generic hooks above, app-specific hooks below **/

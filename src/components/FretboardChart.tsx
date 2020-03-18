@@ -6,19 +6,31 @@ import { Translate } from '../svg/Translate';
 
 import { Marker } from './types';
 
-import './FretboardChart.css';
+import './App.css';
+import { useDimensions } from '../hooks';
 
 type SizeProps = {
   width: number;
   height: number;
 }
 
-export const FretboardChart: React.FunctionComponent<SizeProps & {
+type Props = {
   markers: readonly Marker[],
   tuning: Tuning,
   fretCount: number,
   onMarkerClick: (marker: Marker) => void,
-}> = ({
+}
+
+export const FretboardChart: React.FunctionComponent<Props> = (props) => {
+  const [ ref, dims ] = useDimensions<HTMLDivElement>();
+  return (
+    <div ref={ref} className='FretboardChart'>
+      {dims && <FretboardChartImpl width={dims.width} height={dims.height} {...props} />}
+    </div>
+  )
+}
+
+const FretboardChartImpl: React.FunctionComponent<SizeProps & Props> = ({
   width,
   height,
   tuning,

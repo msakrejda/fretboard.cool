@@ -1,6 +1,4 @@
 before shipping:
-* mobile
-* write README
 * vendor soundfont
 * animate transitions
 * lint

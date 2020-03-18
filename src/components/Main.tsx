@@ -22,7 +22,10 @@ import { FretCountPicker } from './FretCountPicker';
 import './App.css';
 
 export const Main: React.FC = () => {
-  const [ fretCount, setFretCount ] = useState(12);
+  // N.B.: this only applies on first load, not resizing, but that's fine:
+  // users can adjust as necessary
+  const defaultFretCount = window.matchMedia('(max-height: 600px)').matches ? 7 : 12;
+  const [ fretCount, setFretCount ] = useState(defaultFretCount);
   const [ display, setDisplay ] = useState<MarkerLabel>('note');
 
   const [ tuning, setTuning ] = useTuning()
@@ -75,23 +78,24 @@ export const Main: React.FC = () => {
       fill: lastClickedPc && pc.equal(fretboardNote.note.pitchClass, lastClickedPc) ? 'gold' : 'white'
     }))
   }) : [];
-return (
-  <div>
-<div className="Main">
-  <FretboardChart markers={markers} onMarkerClick={handleMarkerClick} tuning={tuning} fretCount={fretCount} width={200} height={600} />
-  <div className="ControlPanel">
-    <ModePicker />
-    {scale && <ScalePicker />}
-    {chord && <ChordPicker />}
-    <TuningPicker value={tuning} onChange={setTuning} />
-    <FretCountPicker value={fretCount} onChange={setFretCount} />
-    <DisplayPicker value={display} onChange={setDisplay} />
-    <hr />
-    {scale ? 'scale degrees' : 'chord tones'}
-    {selected && <NoteList notes={selected} onClick={tempSetLastPc} />}
-  </div>
-</div>
-<Footer />
-</div>
-)
+
+  return (
+    <>
+      <div className="Main">
+        <FretboardChart markers={markers} onMarkerClick={handleMarkerClick} tuning={tuning} fretCount={fretCount} />
+        <div className="ControlPanel">
+          <ModePicker />
+          {scale && <ScalePicker />}
+          {chord && <ChordPicker />}
+          <TuningPicker value={tuning} onChange={setTuning} />
+          <FretCountPicker value={fretCount} onChange={setFretCount} />
+          <DisplayPicker value={display} onChange={setDisplay} />
+          <hr />
+          {scale ? 'scale degrees' : 'chord tones'}
+          {selected && <NoteList notes={selected} onClick={tempSetLastPc} />}
+        </div>
+      </div>
+      <Footer />
+    </>
+  )
 }

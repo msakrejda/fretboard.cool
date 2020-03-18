@@ -24,7 +24,7 @@ export const ScalePicker: React.FC = () => {
   return (
     <div>
       <span className="FormLabel">scale</span>
-      <div className='ScalePicker'>
+      <div className='ScaleChordPicker'>
         <PitchClassPicker value={current.root} onChange={handleRootChange} />
         <Dropdown value={current.name} options={Object.keys(ScaleKinds)} onChange={handleKindChange} />
       </div>

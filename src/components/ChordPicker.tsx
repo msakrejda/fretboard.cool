@@ -29,7 +29,7 @@ export const ChordPicker: React.FC = () => {
   return (
     <div>
       <span className="FormLabel">chord</span>
-      <div className="ChordPicker">
+      <div className="ScaleChordPicker">
         <PitchClassPicker value={current.root} onChange={handleRootChange} />
         <Dropdown value={current.name} options={Object.keys(ChordKinds)} onChange={handleKindChange} />
       </div>
