@@ -3,7 +3,7 @@
 Fretboard dot cool is an app intended to help you learn, explore, and
 internalize the scale and chord patterns on your instrument's fretboard.
 
-![App screenshot](/screenshot.png?raw=true "Screenshot")
+<img alt="App screenshot" src="/screenshot.png?raw=true" height="400"/>
 
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
