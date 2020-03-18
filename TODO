@@ -4,6 +4,7 @@ before shipping:
 * vendor soundfont
 * animate transitions
 * lint
+* add CoC
 
 later:
 * key-oriented navigation (pick key, then easily switch I / II / IV / V / etc.)
