@@ -38,8 +38,16 @@ const mapping = {
 
 const reverseMapping = new Map(Object.entries(mapping).map(([k, v]) => [v, k]))
 
-export const format = (quality: Quality): string => {
-  const result = reverseMapping.get(quality)
+const names = {
+  [Quality.Major]: 'major',
+  [Quality.Minor]: 'minor',
+  [Quality.Augmented]: 'augmented',
+  [Quality.Diminished]: 'diminished',
+  [Quality.Perfect]: 'perfect',
+}
+
+export const format = (quality: Quality, long: boolean = false): string => {
+  const result = long ? names[quality] : reverseMapping.get(quality)
   if (result === undefined) {
     throw new Error('unknown quality: ' + Quality[quality])
   }

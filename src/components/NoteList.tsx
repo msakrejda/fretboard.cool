@@ -53,7 +53,7 @@ export const NoteList: React.FC<{
               <svg width={width} height={height}>
                 <ListMarker label={label} />
               </svg>{' '}
-              {i === 0 ? 'root' : interval.format(int)}
+              {i === 0 ? 'root' : interval.format(int, true)}
             </li>
           )
         })}

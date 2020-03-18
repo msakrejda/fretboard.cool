@@ -172,8 +172,38 @@ export const getNotesInRange = (
   return result
 }
 
-export const format = (i: Interval): string => {
-  return quality.format(i.quality) + String(i.number)
+const formatIntervalNumber = (n: number, long: boolean = false): string => {
+  if (!long) {
+    return String(n);
+  }
+
+  switch (n) {
+    case 1:
+      return 'unison';
+    case 2:
+      return 'second';
+    case 3:
+      return 'third';
+    case 4:
+      return 'fourth';
+    case 5:
+      return 'fifth';
+    case 6:
+      return 'sixth';
+    case 7:
+      return 'seventh';
+    case 8:
+      return 'octave';
+    default:
+      throw new Error('unknown interval number: ' + n)
+  }
+}
+
+export const format = (i: Interval, long: boolean = false): string => {
+  const spacer = long ? ' ' : '';
+  // non-perfect unisons and octaves are so rare we just avoid them
+  const qualityStr = [1, 8].includes(i.number) ? '' : quality.format(i.quality, long);
+  return qualityStr + spacer + formatIntervalNumber(i.number, long);
 }
 
 export const parse = (str: string): Interval => {
