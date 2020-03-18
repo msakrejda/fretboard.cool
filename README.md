@@ -5,6 +5,12 @@ internalize the scale and chord patterns on your instrument's fretboard.
 
 This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
 
+## Contributing
+
+Contributions are always welcome. Please [open an issue](https://github.com/uhoh-itsmaciek/fretboard.cool/issues/new)
+to discuss or a pull request to propose simple changes directly. Any feedback is also
+greatly appreciated.
+
 ## Development
 
 In the project directory, you can run the following scripts:
