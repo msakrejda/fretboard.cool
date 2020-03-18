@@ -76,7 +76,7 @@ export const SyncContextWithRoute: React.FC = ({children}) => {
       prevScale: c?.scale || c?.prevScale,
     }));
   }, [ routeContext ]);
-  const { tuning, scale, chord } = routeContext;
+  const { tuning, scale, chord } = context;
 
   const updateRouteContext = useCallback((newContext: AppContextParams) => {
     const merged = {
