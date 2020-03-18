@@ -1,5 +1,4 @@
 before shipping:
-* vendor soundfont
 * animate transitions
 * lint
 * add CoC

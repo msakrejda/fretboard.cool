@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-import Soundfont from 'soundfont-player';
+import Soundfont, { InstrumentName } from 'soundfont-player';
 
 import { MarkerLabel, Marker } from './types';
 import pc, { PitchClass } from '../theory/pitchClass';
@@ -47,7 +47,7 @@ export const Main: React.FC = () => {
     if (!soundPlayer) {
       setPendingPlayback(marker.note);
       const ac = new AudioContext();
-      Soundfont.instrument(ac, 'acoustic_guitar_steel', { soundfont: 'FluidR3_GM' }).then(guitar => {
+      Soundfont.instrument(ac, process.env.PUBLIC_URL + '/fluid-r3-acoustic_guitar_steel-mp3.js' as InstrumentName).then(guitar => {
         setSoundPlayer(guitar)
       })
       return;
