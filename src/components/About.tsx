@@ -1,9 +1,11 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
 
+import './App.css'
+
 export const About: React.FC = () => {
   return (
-    <div>
+    <div className="About">
       <p>
         Fretboard dot cool is an app intended to help you learn, explore, and
         internalize the scale and chord patterns on your instrument's fretboard.

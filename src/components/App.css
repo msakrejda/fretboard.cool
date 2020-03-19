@@ -20,6 +20,10 @@
   margin: auto;
 }
 
+.About {
+  padding: 0px 8px;
+}
+
 .Main {
   display: flex;
   margin-top: 32px;
@@ -87,6 +91,8 @@
 
 .NoteList {
   line-height: 1.7;
+  list-style: inside decimal;
+  padding-left: 4px;
 }
 
 .NoteList svg {
