@@ -148,6 +148,8 @@ export const FretMarker: React.FunctionComponent<{
       />
       <text
         textRendering='optimizeLegibility'
+        className='FretMarkerLabel'
+        textLength={radius * 2 * 0.85}
         dominantBaseline='middle'
         textAnchor='middle'
         pointerEvents='none'>

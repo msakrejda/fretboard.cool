@@ -98,4 +98,9 @@
 .NoteList svg {
   vertical-align: middle;
   font-size: 80%;
+  font-family: 'Sawarabi Gothic', sans-serif;
+}
+
+.FretMarkerLabel {
+  font-family: 'Sawarabi Gothic', sans-serif;
 }

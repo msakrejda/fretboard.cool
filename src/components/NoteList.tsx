@@ -10,7 +10,7 @@ export const NoteList: React.FC<{
   notes: PitchClassSequence
   onClick: (pc: PitchClass) => void
 }> = ({ notes, onClick }) => {
-  const markerRadius = 10
+  const markerRadius = 12
   const strokeWidth = 1
   const width = markerRadius * 2 + 2 * strokeWidth
   const height = markerRadius * 2 + 2 * strokeWidth
@@ -40,6 +40,7 @@ export const NoteList: React.FC<{
                 />
                 <text
                   textRendering='optimizeLegibility'
+                  textLength={markerRadius * 2 * 0.8}
                   dominantBaseline='middle'
                   textAnchor='middle'
                   pointerEvents='none'>
