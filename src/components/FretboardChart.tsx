@@ -146,7 +146,11 @@ export const FretMarker: React.FunctionComponent<{
         strokeWidth={1}
         onClick={handleMarkerClick}
       />
-      <text dominantBaseline='middle' textAnchor='middle' pointerEvents='none'>
+      <text
+        textRendering='optimizeLegibility'
+        dominantBaseline='middle'
+        textAnchor='middle'
+        pointerEvents='none'>
         {marker.label}
       </text>
     </>

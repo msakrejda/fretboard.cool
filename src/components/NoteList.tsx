@@ -39,6 +39,7 @@ export const NoteList: React.FC<{
                   onClick={handleMarkerClick}
                 />
                 <text
+                  textRendering='optimizeLegibility'
                   dominantBaseline='middle'
                   textAnchor='middle'
                   pointerEvents='none'>
