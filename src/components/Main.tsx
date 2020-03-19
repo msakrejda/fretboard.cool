@@ -106,11 +106,11 @@ export const Main: React.FC = () => {
           fretCount={fretCount}
         />
         <div className='ControlPanel'>
+          <TuningPicker value={tuning} onChange={setTuning} />
+          <FretCountPicker value={fretCount} onChange={setFretCount} />
           <ModePicker />
           {scale && <ScalePicker />}
           {chord && <ChordPicker />}
-          <TuningPicker value={tuning} onChange={setTuning} />
-          <FretCountPicker value={fretCount} onChange={setFretCount} />
           <DisplayPicker value={display} onChange={setDisplay} />
           <hr />
           {scale ? 'scale degrees' : 'chord tones'}
