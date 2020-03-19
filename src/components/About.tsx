@@ -5,7 +5,7 @@ import './App.css'
 
 export const About: React.FC = () => {
   return (
-    <div className="About">
+    <div className='About'>
       <h1>About</h1>
       <p>
         Fretboard dot cool is an app intended to help you learn, explore, and
