@@ -21,6 +21,10 @@ import { FretCountPicker } from './FretCountPicker'
 
 import './App.css'
 
+type MaybeSafariWindow = {
+  webkitAudioContext: typeof AudioContext
+}
+
 export const Main: React.FC = () => {
   // N.B.: this only applies on first load, not resizing, but that's fine:
   // users can adjust as necessary
@@ -52,7 +56,7 @@ export const Main: React.FC = () => {
 
     if (!soundPlayer) {
       setPendingPlayback(marker.note)
-      const ac = new AudioContext()
+      const ac = new (AudioContext || (window as unknown as MaybeSafariWindow).webkitAudioContext)()
       const instrumentPath = (process.env.PUBLIC_URL +
         '/fluid-r3-acoustic_guitar_steel-mp3.js') as InstrumentName
       Soundfont.instrument(ac, instrumentPath).then((guitar) => {
