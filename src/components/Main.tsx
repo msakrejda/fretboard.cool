@@ -56,7 +56,8 @@ export const Main: React.FC = () => {
 
     if (!soundPlayer) {
       setPendingPlayback(marker.note)
-      const ac = new (AudioContext || (window as unknown as MaybeSafariWindow).webkitAudioContext)()
+      const ac = new (AudioContext ||
+        ((window as unknown) as MaybeSafariWindow).webkitAudioContext)()
       const instrumentPath = (process.env.PUBLIC_URL +
         '/fluid-r3-acoustic_guitar_steel-mp3.js') as InstrumentName
       Soundfont.instrument(ac, instrumentPath).then((guitar) => {
