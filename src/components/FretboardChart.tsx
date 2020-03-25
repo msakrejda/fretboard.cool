@@ -49,6 +49,7 @@ const FretboardChartImpl: React.FunctionComponent<SizeProps & Props> = ({
   const checkVisible = (marker: Marker): boolean => {
     return !isBanjo || marker.string !== 0 || marker.fret >= 5
   }
+  const adaptedMarkers = markers.filter(checkVisible)
   const numberedFrets = [3, 5, 7, 9, 12].filter((f) => f <= fretCount)
 
   const minMargin = 20
@@ -135,7 +136,7 @@ const FretboardChartImpl: React.FunctionComponent<SizeProps & Props> = ({
             </Translate>
           ))}
         </g>
-        {markers.filter(checkVisible).map((marker, i) => (
+        {adaptedMarkers.map((marker, i) => (
           <Translate key={i} x={markerX(marker)} y={markerY(marker)}>
             <FretMarker
               marker={marker}

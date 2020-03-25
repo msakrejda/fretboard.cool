@@ -23,10 +23,12 @@ export const Tunings = [
   tuning('guitar', 'open g', ['d2', 'g2', 'd3', 'g3', 'b3', 'd4']),
   tuning('guitar', 'open d', ['d2', 'a2', 'd3', 'f#3', 'a3', 'd4']),
 
-  tuning('banjo', 'standard', ['g4', 'd3', 'g3', 'b3', 'd4']),
-  tuning('banjo', 'open d', ['f#4', 'd3', 'f#3', 'a3', 'd4']),
-  tuning('banjo', 'double c', ['g4', 'c3', 'g3', 'c4', 'd4']),
-  tuning('banjo', 'sawmill', ['g4', 'd3', 'g3', 'c4', 'd4']),
+  // TODO: banjo tuning is pretty ugly right now because the fifth
+  // string needs to be offset here by a fourth here
+  tuning('banjo', 'standard', ['d4', 'd3', 'g3', 'b3', 'd4']),
+  tuning('banjo', 'open d', ['c#4', 'd3', 'f#3', 'a3', 'd4']),
+  tuning('banjo', 'double c', ['d4', 'c3', 'g3', 'c4', 'd4']),
+  tuning('banjo', 'sawmill', ['d4', 'd3', 'g3', 'c4', 'd4']),
 
   tuning('dobro', 'standard', ['g2', 'b2', 'd3', 'g3', 'b3', 'd4']),
   tuning('dobro', 'open d', ['d2', 'a2', 'd3', 'f#3', 'a3', 'd4']),
