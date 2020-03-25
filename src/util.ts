@@ -24,17 +24,15 @@ export const fretPositions = (
 export const stringPositions = (
   stringCount: number,
   fretboardWidth: number,
-  stringWidth: number
+  stringWidth: number,
+  stringInset: number
 ): number[] => {
-  const stringInset = 8
   const stringPositions = Array(stringCount)
     .fill(undefined)
     .map((s, i) => {
-      return (
-        stringInset +
-        i * ((fretboardWidth - 2 * stringInset) / (stringCount - 1)) -
-        stringWidth / 2
-      )
+      const totStringSpace = fretboardWidth - 2 * stringInset
+      const spacePerString = totStringSpace / (stringCount - 1)
+      return stringInset + i * spacePerString - stringWidth / 2
     })
   return stringPositions
 }

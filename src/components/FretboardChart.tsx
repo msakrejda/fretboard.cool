@@ -44,6 +44,11 @@ const FretboardChartImpl: React.FunctionComponent<SizeProps & Props> = ({
   markers,
   onMarkerClick,
 }) => {
+  // need to account for weird fifth string here
+  const isBanjo = tuning.instrument === 'banjo'
+  const checkVisible = (marker: Marker): boolean => {
+    return !isBanjo || marker.string !== 0 || marker.fret >= 5
+  }
   const numberedFrets = [3, 5, 7, 9, 12].filter((f) => f <= fretCount)
 
   const minMargin = 20
@@ -59,6 +64,7 @@ const FretboardChartImpl: React.FunctionComponent<SizeProps & Props> = ({
   const nutWidth = 4
   const fretWidth = 2
   const stringWidth = 2
+  const stringInset = 8
 
   const scaleLen = scaleLength(fretCount, fretboardSize.height)
 
@@ -66,7 +72,8 @@ const FretboardChartImpl: React.FunctionComponent<SizeProps & Props> = ({
   const stringPos = stringPositions(
     tuning.notes.length,
     fretboardSize.width,
-    stringWidth
+    stringWidth,
+    stringInset
   )
   const smallestFretDistance =
     fretPos[fretPos.length - 1] - fretPos[fretPos.length - 2]
@@ -94,27 +101,41 @@ const FretboardChartImpl: React.FunctionComponent<SizeProps & Props> = ({
     return (prev + curr) / 2 + fretWidth / 2
   }
 
+  const maskId = 'banjoMask'
+  const maskRef = isBanjo ? `url(#${maskId})` : undefined
+
   return (
     <svg width={width} height={height}>
+      {isBanjo && (
+        <BanjoMask
+          id={maskId}
+          stringPos={stringPos}
+          stringInset={stringInset}
+          fretPos={fretPos}
+          {...fretboardSize}
+        />
+      )}
       <Translate x={leftMargin} y={topMargin}>
-        <Fretboard {...fretboardSize} />
-        <Nut width={fretboardSize.width} height={nutWidth} />
-        {fretPos.map((yOffset) => (
-          <Translate key={yOffset} y={yOffset}>
-            <Fret width={fretboardSize.width} height={fretWidth} />
-          </Translate>
-        ))}
-        {stringPos.map((xOffset) => (
-          <Translate key={xOffset} x={xOffset}>
-            <String width={stringWidth} height={fretboardSize.height} />
-          </Translate>
-        ))}
-        {numberedFrets.map((n) => (
-          <Translate key={n} y={fretPos[n - 1]}>
-            <FretNumber label={n.toString()} />
-          </Translate>
-        ))}
-        {markers.map((marker, i) => (
+        <g mask={maskRef}>
+          <Fretboard {...fretboardSize} />
+          <Nut width={fretboardSize.width} height={nutWidth} />
+          {fretPos.map((yOffset) => (
+            <Translate key={yOffset} y={yOffset}>
+              <Fret width={fretboardSize.width} height={fretWidth} />
+            </Translate>
+          ))}
+          {stringPos.map((xOffset) => (
+            <Translate key={xOffset} x={xOffset}>
+              <String width={stringWidth} height={fretboardSize.height} />
+            </Translate>
+          ))}
+          {numberedFrets.map((n) => (
+            <Translate key={n} y={fretPos[n - 1]}>
+              <FretNumber label={n.toString()} />
+            </Translate>
+          ))}
+        </g>
+        {markers.filter(checkVisible).map((marker, i) => (
           <Translate key={i} x={markerX(marker)} y={markerY(marker)}>
             <FretMarker
               marker={marker}
@@ -125,6 +146,29 @@ const FretboardChartImpl: React.FunctionComponent<SizeProps & Props> = ({
         ))}
       </Translate>
     </svg>
+  )
+}
+
+const BanjoMask: React.FunctionComponent<{
+  id: string
+  stringPos: number[]
+  stringInset: number
+  fretPos: number[]
+  width: number
+  height: number
+}> = ({ id, stringPos, stringInset, fretPos, width, height }) => {
+  const insetEdgeX = stringPos[1] - stringInset
+  const insetEdgeY = fretPos.length >= 4 ? fretPos[3] : height
+  const normalEdgeX = 0
+  const normalEdgeY = fretPos.length >= 5 ? fretPos[4] : height
+
+  const maskPoints = `0,0 ${insetEdgeX},0 ${insetEdgeX},${insetEdgeY} ${normalEdgeX},${normalEdgeY}`
+
+  return (
+    <mask id={id}>
+      <rect width={width} height={height} fill='white' />
+      <polygon points={maskPoints} fill='black' />
+    </mask>
   )
 }
 
