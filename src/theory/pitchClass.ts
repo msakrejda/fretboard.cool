@@ -1,4 +1,5 @@
-import accidental, { Accidental } from './accidental'
+import * as accidental from './accidental'
+import { Accidental } from './accidental'
 import { NoteLetter, NoteLetters } from './letter'
 
 export interface PitchClass {
@@ -6,21 +7,21 @@ export interface PitchClass {
   accidental: Accidental
 }
 
-export const pc = (
+export function pc(
   letter: NoteLetter,
   accidental: Accidental = Accidental.Natural
-) => {
+): PitchClass {
   return {
     letter,
     accidental,
   }
 }
 
-export const equal = (pc1: PitchClass, pc2: PitchClass): boolean => {
+export function equal(pc1: PitchClass, pc2: PitchClass): boolean {
   return pc1.letter === pc2.letter && pc1.accidental === pc2.accidental
 }
 
-export const parse = (pcName: string): PitchClass => {
+export function parse(pcName: string): PitchClass {
   const [letter, maybeAccidental, ...rest] = pcName.split('')
   if (rest.length !== 0) {
     throw new Error('unknown pitch class: ' + pcName)
@@ -45,17 +46,10 @@ export const parse = (pcName: string): PitchClass => {
   return pc(upcaseLetter as NoteLetter, accidental)
 }
 
-export const format = (pc: PitchClass, ascii: boolean = false): string => {
+export function format(pc: PitchClass, ascii: boolean = false): string {
   const acc =
     pc.accidental === Accidental.Natural
       ? ''
       : accidental.format(pc.accidental, ascii)
   return `${pc.letter}${acc}`
-}
-
-export default {
-  pc,
-  format,
-  parse,
-  equal,
 }

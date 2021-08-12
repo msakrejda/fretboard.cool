@@ -1,4 +1,5 @@
-import note, { Note } from './theory/note'
+import * as note from './theory/note'
+import { Note } from './theory/note'
 
 export interface Tuning {
   instrument: string
@@ -36,20 +37,15 @@ export const Tunings = [
   tuning('ukulele', 'standard', ['g4', 'c4', 'e4', 'a4']),
 ] as const
 
-const urlEncode = (t: Tuning): string => {
+export function urlEncode(t: Tuning): string {
   return encodeURIComponent(t.instrument + ':' + t.name)
 }
 
-const urlDecode = (tStr: string | undefined): Tuning | undefined => {
+export function urlDecode(tStr: string | undefined): Tuning | undefined {
   if (tStr === undefined) {
     return undefined
   }
   const decoded = decodeURIComponent(tStr)
   const [instrument, name] = decoded.split(':')
   return Tunings.find((t) => t.instrument === instrument && t.name === name)
-}
-
-export default {
-  urlEncode,
-  urlDecode,
 }

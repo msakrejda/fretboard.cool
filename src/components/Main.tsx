@@ -3,8 +3,10 @@ import React, { useState, useEffect } from 'react'
 import Soundfont, { InstrumentName } from 'soundfont-player'
 
 import { MarkerLabel, Marker } from './types'
-import pc, { PitchClass } from '../theory/pitchClass'
-import note, { Note } from '../theory/note'
+import * as pc from '../theory/pitchClass'
+import { PitchClass } from '../theory/pitchClass'
+import * as note from '../theory/note'
+import { Note } from '../theory/note'
 import { getNotesInRange } from '../theory/interval'
 
 import { useStateWhileMounted, useTuning, useScale, useChord } from '../hooks'

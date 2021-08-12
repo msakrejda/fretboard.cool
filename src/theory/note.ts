@@ -1,5 +1,6 @@
 import { NoteLetter } from './letter'
-import pc, { PitchClass } from './pitchClass'
+import * as pc from './pitchClass'
+import { PitchClass } from './pitchClass'
 
 export interface Note {
   pitchClass: PitchClass
@@ -60,12 +61,4 @@ export const parse = (noteName: string): Note => {
 
 export const format = (note: Note, ascii: boolean = false): string => {
   return `${pc.format(note.pitchClass, ascii)}${note.octave}`
-}
-
-export default {
-  note,
-  parse,
-  format,
-  value,
-  equal,
 }

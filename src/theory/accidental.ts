@@ -27,19 +27,14 @@ const unicodeMapping = {
   [Accidental.DoubleSharp]: '𝄪',
 }
 
-const format = (value: Accidental, ascii: boolean = false): string => {
+export function format(value: Accidental, ascii: boolean = false): string {
   return (ascii ? asciiMapping : unicodeMapping)[value]
 }
 
-const adjust = (
+export function adjust(
   accidental: Accidental,
   semitones: number
-): Accidental | undefined => {
+): Accidental | undefined {
   const newAccidental = accidental + semitones
   return newAccidental in Accidental ? newAccidental : undefined
-}
-
-export default {
-  adjust,
-  format,
 }

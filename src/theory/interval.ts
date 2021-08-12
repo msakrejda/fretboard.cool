@@ -1,8 +1,10 @@
 import { NoteLetters, nextLetterSemitones } from './letter'
 import { pc, PitchClass } from './pitchClass'
-import quality, { Quality } from './quality'
+import * as quality from './quality'
+import { Quality } from './quality'
 import { Accidental } from './accidental'
-import note, { Note, nextAtOrBelow, value } from './note'
+import * as note from './note'
+import { Note, nextAtOrBelow, value } from './note'
 
 type MajorMinorIntervalNumber = 2 | 3 | 6 | 7
 type PerfectIntervalNumber = 1 | 4 | 5 | 8
@@ -95,7 +97,7 @@ export const m = (number: MajorMinorIntervalNumber): MajorMinorInterval => {
   }
 }
 
-export const add = (n: Note, interval: Interval): Note => {
+export function add(n: Note, interval: Interval): Note {
   const noteIdx = NoteLetters.indexOf(n.pitchClass.letter)
   const newIdx = noteIdx + (interval.number - 1)
   let newOctave = n.octave
@@ -136,11 +138,11 @@ type SequenceNote = {
   index: number
 }
 
-export const getNotesInRange = (
+export function getNotesInRange(
   startingAt: Note,
   semitones: number,
   from: PitchClassSequence
-): SequenceNote[] => {
+): SequenceNote[] {
   const lowestRoot = nextAtOrBelow(from.root, startingAt)
   const result: SequenceNote[] = []
   if (!lowestRoot) {
@@ -199,7 +201,7 @@ const formatIntervalNumber = (n: number, long: boolean = false): string => {
   }
 }
 
-export const format = (i: Interval, long: boolean = false): string => {
+export function format(i: Interval, long: boolean = false): string {
   const spacer = long ? ' ' : ''
   // non-perfect unisons and octaves are so rare we just avoid them
   const qualityStr = [1, 8].includes(i.number)
@@ -208,7 +210,7 @@ export const format = (i: Interval, long: boolean = false): string => {
   return qualityStr + spacer + formatIntervalNumber(i.number, long)
 }
 
-export const parse = (str: string): Interval => {
+export function parse(str: string): Interval {
   if (str.length !== 2) {
     throw new Error('unknown interval: ' + str)
   }
@@ -227,9 +229,4 @@ export const parse = (str: string): Interval => {
   } else {
     throw new Error('unknown interval: ' + str)
   }
-}
-
-export default {
-  parse,
-  format,
 }

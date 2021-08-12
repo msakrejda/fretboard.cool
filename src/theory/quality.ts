@@ -13,7 +13,7 @@ type MajorMinorQuality =
   | Quality.Diminished
 type PerfectQuality = Quality.Perfect | Quality.Augmented | Quality.Diminished
 
-export const isMajorMinor = (value: Quality): value is MajorMinorQuality => {
+export function isMajorMinor(value: Quality): value is MajorMinorQuality {
   return [
     Quality.Major,
     Quality.Minor,
@@ -22,7 +22,7 @@ export const isMajorMinor = (value: Quality): value is MajorMinorQuality => {
   ].includes(value)
 }
 
-export const isPerfect = (value: Quality): value is PerfectQuality => {
+export function isPerfect(value: Quality): value is PerfectQuality {
   return [Quality.Perfect, Quality.Augmented, Quality.Diminished].includes(
     value
   )
@@ -46,7 +46,7 @@ const names = {
   [Quality.Perfect]: 'perfect',
 }
 
-export const format = (quality: Quality, long: boolean = false): string => {
+export function format(quality: Quality, long: boolean = false): string {
   const result = long ? names[quality] : reverseMapping.get(quality)
   if (result === undefined) {
     throw new Error('unknown quality: ' + Quality[quality])
@@ -54,17 +54,10 @@ export const format = (quality: Quality, long: boolean = false): string => {
   return result
 }
 
-export const parse = (str: string): Quality => {
+export function parse(str: string): Quality {
   const result = mapping[str as keyof typeof mapping]
   if (result === undefined) {
     throw new Error('unknown quality: ' + str)
   }
   return result
-}
-
-export default {
-  isMajorMinor,
-  isPerfect,
-  format,
-  parse,
 }
