@@ -38,3 +38,8 @@ export function adjust(
   const newAccidental = accidental + semitones
   return newAccidental in Accidental ? newAccidental : undefined
 }
+
+export default {
+  adjust,
+  format,
+}

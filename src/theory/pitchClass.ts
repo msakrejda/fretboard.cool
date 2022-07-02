@@ -53,3 +53,10 @@ export function format(pc: PitchClass, ascii: boolean = false): string {
       : accidental.format(pc.accidental, ascii)
   return `${pc.letter}${acc}`
 }
+
+export default {
+  pc,
+  equal,
+  parse,
+  format,
+}

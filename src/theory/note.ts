@@ -62,3 +62,12 @@ export const parse = (noteName: string): Note => {
 export const format = (note: Note, ascii: boolean = false): string => {
   return `${pc.format(note.pitchClass, ascii)}${note.octave}`
 }
+
+export default {
+  note,
+  equal,
+  value,
+  parse,
+  format,
+  nextAtOrBelow,
+}

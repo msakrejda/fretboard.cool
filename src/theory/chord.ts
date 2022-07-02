@@ -38,3 +38,9 @@ export function urlDecode(pcStr: string, nameStr: string): Chord {
   const intervals = ChordKinds[name as keyof typeof ChordKinds]
   return chord(name, root, intervals)
 }
+
+export default {
+  chord,
+  urlEncode,
+  urlDecode,
+}

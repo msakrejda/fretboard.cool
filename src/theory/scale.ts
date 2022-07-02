@@ -39,3 +39,9 @@ export function urlDecode(pcStr: string, nameStr: string): Scale {
   const intervals = ScaleKinds[name as keyof typeof ScaleKinds]
   return scale(name, root, intervals)
 }
+
+export default {
+  scale,
+  urlEncode,
+  urlDecode,
+}

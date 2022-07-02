@@ -49,3 +49,9 @@ export function urlDecode(tStr: string | undefined): Tuning | undefined {
   const [instrument, name] = decoded.split(':')
   return Tunings.find((t) => t.instrument === instrument && t.name === name)
 }
+
+export default {
+  tuning,
+  urlEncode,
+  urlDecode,
+}

@@ -230,3 +230,8 @@ export function parse(str: string): Interval {
     throw new Error('unknown interval: ' + str)
   }
 }
+
+export default {
+  format,
+  parse,
+}
