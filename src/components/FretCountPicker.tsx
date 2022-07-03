@@ -7,7 +7,10 @@ export const FretCountPicker: React.FC<{
   onChange: (count: number) => void
 }> = ({ value, onChange }) => {
   const handleFretCountChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    onChange(parseInt(e.currentTarget.value, 10))
+    const parsed = parseInt(e.currentTarget.value, 10)
+    const newValue = isNaN(parsed) ? 12 : parsed
+    const constrained = Math.min(Math.max(newValue, 3), 15)
+    onChange(constrained)
   }
   return (
     <div className='FretCountPicker'>
